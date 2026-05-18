@@ -331,3 +331,24 @@ Si despliegas el backend en un servidor o plataforma externa y quieres usar Neon
 Resumen:
 - local con Docker: `db` local + `DATABASE_URL` vacío
 - backend desplegado: `DATABASE_URL` de Neon
+
+## Variables por proyecto en Vercel
+
+Si despliegas el monorepo como dos proyectos separados en Vercel:
+
+- proyecto `frontend`
+  - directorio raíz: `frontend`
+  - variables:
+    - `VITE_API_BASE_URL=https://tu-backend.vercel.app/api`
+- proyecto `backend`
+  - directorio raíz: `backend`
+  - variables:
+    - `DATABASE_URL=...`
+    - `FRONTEND_URL=https://tu-frontend.vercel.app`
+    - `SESSION_SECRET=...`
+    - `SESSION_COOKIE_SAME_SITE=none`
+    - `SESSION_COOKIE_SECURE=true`
+
+Archivos de referencia:
+- [frontend/.env.example](./frontend/.env.example)
+- [backend/.env.example](./backend/.env.example)

@@ -1,4 +1,5 @@
-const BASE = '/api';
+const rawBase = import.meta.env.VITE_API_BASE_URL || '/api';
+const BASE = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
 
 async function request(method, path, body = null) {
   const options = { method, credentials: 'include' };
