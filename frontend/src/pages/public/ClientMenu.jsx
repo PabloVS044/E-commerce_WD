@@ -123,7 +123,7 @@ export default function ClientMenu() {
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fcf9f8_0%,#f5efed_100%)]">
+    <div className="min-h-screen bg-[var(--app-surface)]">
       <header className="sticky top-0 z-30 border-b border-[var(--app-border)] bg-white/95 backdrop-blur">
         <div className="container flex flex-wrap items-center justify-between gap-3 py-3">
           <div className="flex items-center gap-3">

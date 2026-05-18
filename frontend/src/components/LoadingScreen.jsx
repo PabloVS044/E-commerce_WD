@@ -1,6 +1,6 @@
 export default function LoadingScreen({ message = 'Cargando información...', label }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[radial-gradient(circle_at_top,rgba(180,106,31,0.08),transparent_22%),linear-gradient(180deg,#f7f1ed_0%,#efe8e4_100%)] px-6">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[var(--app-surface)] px-6">
       <div className="rounded-full border border-[var(--app-border)] bg-white/75 px-4 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--app-text-muted)]">
         Inicializando operación
       </div>

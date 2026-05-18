@@ -18,7 +18,7 @@ export default function AppShell({ title, subtitle, actions, children }) {
             </div>
             <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
               {actions}
-              <div className="min-w-[220px] rounded-[1.4rem] border border-[var(--app-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(246,238,234,0.92))] px-4 py-3 shadow-[var(--shadow-soft)]">
+              <div className="min-w-[220px] rounded-[1.4rem] border border-[var(--app-border)] bg-white px-4 py-3 shadow-[var(--shadow-soft)]">
                 <div className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Turno activo</div>
                 <div className="mt-2 font-semibold text-[var(--app-text)]">{user?.nombre} {user?.apellido}</div>
                 <div className="mt-1 inline-flex rounded-full bg-[var(--brand-soft)] px-3 py-1 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-[var(--brand)]">{user?.rol}</div>

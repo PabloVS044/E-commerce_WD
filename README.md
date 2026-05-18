@@ -1,14 +1,15 @@
 # Tacos El Pepe
 
 Sistema web de gestión de inventario y ventas para una taquería.
-Proyecto universitario — Bases de Datos 1.
+Proyecto universitario — Sistemas y Tecnologías Web.
 
 ## Stack
 
 - **Base de datos**: PostgreSQL 16 (Docker)
-- **Backend**: Node.js + Express + `pg` (API JSON) — sesiones con `express-session` y contraseñas con `bcryptjs`
+- **Backend**: Node.js + Express + `pg` (API JSON) — sesiones con `express-session`, `connect-pg-simple` y contraseñas con `bcryptjs`
 - **Frontend**: React 18 + Vite + React Router v6 + Tailwind CSS 4
 - **Orquestación**: Docker Compose con `db`, `backend` y `frontend`
+- **Despliegue actual**: frontend y backend en Vercel, base de datos en Neon
 - **Arquitectura**: backend por capas (`routes -> controllers -> services -> models -> queries`) y frontend dividido entre portal cliente y backoffice
 
 ## Estructura del proyecto
@@ -18,6 +19,7 @@ TacosElPepe/
 ├── backend/
 │   ├── Dockerfile
 │   ├── package.json
+│   ├── tests/
 │   ├── scripts/
 │   │   ├── ensure-runtime.js     <- espera la BD y prepara credenciales en Docker
 │   │   └── seed-passwords.js     <- reasigna contraseñas en desarrollo local
@@ -25,7 +27,9 @@ TacosElPepe/
 │       ├── app.js
 │       ├── server.js
 │       ├── config/
+│       │   ├── cors.js
 │       │   ├── db.js
+│       │   ├── loadEnv.js
 │       │   └── session.js
 │       ├── controllers/          <- capa HTTP por módulo
 │       ├── middleware/           <- auth, manejo de errores y async handlers
@@ -45,6 +49,8 @@ TacosElPepe/
 ├── frontend/
 │   ├── Dockerfile
 │   ├── package.json
+│   ├── tests/
+│   ├── vercel.json              <- fallback SPA para rutas internas en Vercel
 │   ├── vite.config.js            <- proxy /api → backend interno de Docker
 │   └── src/
 │       ├── App.jsx               <- rutas públicas y protegidas
@@ -91,6 +97,16 @@ TacosElPepe/
 ```
 
 ## Requisitos
+
+## Despliegue público actual
+
+- **Frontend principal**: `https://tacospepe.pvasquez.dev`
+- **Backend principal**: `https://tacospepeapi.pvasquez.dev`
+- **Healthcheck backend**: `https://tacospepeapi.pvasquez.dev/api/health`
+
+Dominios de respaldo en Vercel:
+- `https://e-commerce-wd.vercel.app`
+- `https://e-commerce-wd-backend.vercel.app`
 
 ### Recomendado: ejecución con Docker
 
@@ -197,6 +213,7 @@ docker compose ps
 ## Accesos después del arranque
 
 - App web: `http://localhost:5173`
+- API local: `http://localhost:3000/api`
 - Base de datos desde DBeaver/psql en el host: `localhost:5433`
 - Base de datos dentro de Docker: host `db`, puerto `5432`
 
@@ -285,12 +302,29 @@ docker compose exec db psql -U proy2 -d tacospepe
 
 ## Desarrollo local opcional
 
-Si quieres correr frontend y backend fuera de Docker, los comandos son los mismos en Linux, macOS y Windows usando PowerShell o Git Bash:
+Si quieres correr frontend y backend fuera de Docker, usa los `.env` por proyecto y deja la base local en Docker:
+
+```bash
+docker compose up db
+```
+
+Variables recomendadas para este modo:
+- `frontend/.env`
+  - `VITE_API_BASE_URL=http://localhost:3000/api`
+- `backend/.env`
+  - `DATABASE_URL=` vacío si quieres usar la base Docker local
+  - `DB_HOST=localhost`
+  - `DB_PORT=5433`
+  - `FRONTEND_URL=http://localhost:5173`
+
+El backend standalone carga primero `backend/.env` y, si no existe, cae al `.env` raíz.
+
+Comandos:
 
 ```bash
 cd backend
 npm install
-npm start
+npm run dev
 ```
 
 En otra terminal:
@@ -310,13 +344,13 @@ npm run seed
 
 Para este modo:
 - deja la base Docker levantada con `docker compose up db`
-- deja `DATABASE_URL` vacío en `.env`
-- usa `DB_HOST=localhost` y `DB_PORT=5433` en `.env`
+- deja `DATABASE_URL` vacío en `backend/.env`
+- usa `DB_HOST=localhost` y `DB_PORT=5433` en `backend/.env`
 - el backend local corre en `http://localhost:3000`
 - el frontend local corre en `http://localhost:5173`
 
 Si cambias `POSTGRES_PORT` para publicar la base en otro puerto, ajusta también `DB_PORT`.
-Si `PORT` o `FRONTEND_PORT` ya están ocupados en tu máquina, cambia esas variables en `.env`.
+Si `PORT` o `FRONTEND_PORT` ya están ocupados en tu máquina, cambia esas variables en `backend/.env` o `.env`.
 Si cambias `FRONTEND_PORT`, ajusta también `FRONTEND_URL`.
 
 ## Despliegue con base externa
@@ -326,6 +360,7 @@ Si despliegas el backend en un servidor o plataforma externa y quieres usar Neon
 - configura `DATABASE_URL` en las variables del hosting del backend
 - no subas esa credencial al repositorio ni la dejes en `.env.example`
 - ajusta `FRONTEND_URL` a la URL pública real del frontend
+- deja `FRONTEND_URL` **sin slash final**
 - para producción, `DB_HOST` y `DB_PORT` pueden quedar sin uso si `DATABASE_URL` está presente
 
 Resumen:
@@ -339,16 +374,49 @@ Si despliegas el monorepo como dos proyectos separados en Vercel:
 - proyecto `frontend`
   - directorio raíz: `frontend`
   - variables:
-    - `VITE_API_BASE_URL=https://tu-backend.vercel.app/api`
+    - `VITE_API_BASE_URL=https://tacospepeapi.pvasquez.dev`
 - proyecto `backend`
   - directorio raíz: `backend`
   - variables:
     - `DATABASE_URL=...`
-    - `FRONTEND_URL=https://tu-frontend.vercel.app`
+    - `FRONTEND_URL=https://tacospepe.pvasquez.dev`
     - `SESSION_SECRET=...`
     - `SESSION_COOKIE_SAME_SITE=none`
     - `SESSION_COOKIE_SECURE=true`
 
+Notas:
+- el frontend normaliza `VITE_API_BASE_URL` automáticamente; si apuntas al host del backend sin `/api`, la app agrega `/api` internamente
+- el backend usa `trust proxy` y sesiones persistidas en PostgreSQL para funcionar correctamente detrás de Vercel
+- [frontend/vercel.json](./frontend/vercel.json) incluye el rewrite para que rutas como `/cliente/seguimiento` resuelvan correctamente en producción
+
 Archivos de referencia:
 - [frontend/.env.example](./frontend/.env.example)
 - [backend/.env.example](./backend/.env.example)
+
+## Calidad y verificación
+
+Frontend:
+
+```bash
+cd frontend
+npm run lint
+npm test
+npm run build
+```
+
+Backend:
+
+```bash
+cd backend
+npm run lint
+npm test
+```
+
+Comprobaciones mínimas recomendadas antes de entregar:
+- `docker compose up --build`
+- login con `jose.perez@tacospepe.gt / admin123`
+- acceso a catálogo público
+- creación de pedido online
+- seguimiento en `/cliente/seguimiento?codigo=...`
+- exportación CSV desde reportes
+- login y navegación del backoffice

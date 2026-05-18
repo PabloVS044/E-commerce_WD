@@ -110,7 +110,7 @@ export default function ClientTracking() {
   }, [activeCode, loadOrder, order]);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fcf9f8_0%,#f5efed_100%)] py-4">
+    <div className="min-h-screen bg-[var(--app-surface)] py-4">
       <div className="container">
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">

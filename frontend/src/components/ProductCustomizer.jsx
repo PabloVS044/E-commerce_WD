@@ -119,7 +119,7 @@ export default function ProductCustomizer({
   return (
     <div className="fixed inset-0 z-[80] flex items-stretch justify-end bg-[rgba(22,15,15,0.52)] backdrop-blur-sm">
       <button type="button" className="flex-1 cursor-default" aria-label="Cerrar personalización" onClick={onClose} />
-      <aside className="relative flex h-full w-full max-w-[32rem] flex-col overflow-hidden border-l border-[var(--app-border)] bg-[linear-gradient(180deg,#fff_0%,#fcf7f6_100%)] shadow-[-18px_0_42px_rgba(17,10,10,0.18)]">
+      <aside className="relative flex h-full w-full max-w-[32rem] flex-col overflow-hidden border-l border-[var(--app-border)] bg-white shadow-[-18px_0_42px_rgba(17,10,10,0.18)]">
         <div className="flex items-start justify-between gap-4 border-b border-[var(--app-border)] px-5 py-5 sm:px-6">
           <div className="min-w-0">
             <div className="text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">
