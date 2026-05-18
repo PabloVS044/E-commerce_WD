@@ -208,7 +208,7 @@ export default function ProductCustomizer({
                       className={[
                         'flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition',
                         active
-                          ? 'border-[var(--brand)] bg-[rgba(114,14,16,0.06)] text-[var(--brand)]'
+                          ? 'border-[var(--brand)] bg-[rgba(16,40,140,0.08)] text-[var(--brand)]'
                           : 'border-[var(--app-border)] bg-white text-[var(--app-text)] hover:border-[var(--brand)]',
                       ].join(' ')}
                       onClick={() => toggleRemoval(ingredient.id_insumo)}

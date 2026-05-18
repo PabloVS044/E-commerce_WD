@@ -353,7 +353,7 @@ export default function PosTerminal() {
           </button>
           <button
             type="button"
-            className="inline-flex min-h-[3.5rem] items-center justify-center rounded-2xl bg-[var(--brand)] px-5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(114,14,16,0.22)] transition hover:bg-[var(--brand-dark)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex min-h-[3.5rem] items-center justify-center rounded-2xl bg-[var(--brand)] px-5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(16,40,140,0.22)] transition hover:bg-[var(--brand-dark)] disabled:cursor-not-allowed disabled:opacity-60"
             onClick={handleSubmit}
             disabled={submitting}
           >
@@ -421,7 +421,7 @@ export default function PosTerminal() {
                           className={[
                             'inline-flex min-h-[3.25rem] items-center justify-center rounded-2xl border px-4 py-3 text-center text-sm font-semibold transition',
                             active
-                              ? 'border-[var(--brand)] bg-[var(--brand)] text-white shadow-[0_10px_24px_rgba(114,14,16,0.18)]'
+                              ? 'border-[var(--brand)] bg-[var(--brand)] text-white shadow-[0_10px_24px_rgba(16,40,140,0.18)]'
                               : 'border-[var(--app-border)] bg-white text-[var(--app-text)] hover:border-[var(--brand)] hover:text-[var(--brand)]',
                           ].join(' ')}
                           onClick={() => setSelectedCategory(category)}
@@ -541,7 +541,7 @@ export default function PosTerminal() {
                   <div className="small text-uppercase text-muted fw-semibold">Pedido actual</div>
                   <h2 className="h4 mb-0">{summary.items} artículos</h2>
                 </div>
-                <div className="rounded-full bg-amber-100 px-3 py-2 text-sm font-bold text-amber-800">
+                <div className="rounded-full bg-[var(--brand-soft)] px-3 py-2 text-sm font-bold text-[var(--brand-dark)]">
                   {formatMoney(summary.subtotal)}
                 </div>
               </div>
@@ -575,7 +575,7 @@ export default function PosTerminal() {
                     </div>
                   )}
                   {!isRegisteringCustomer && selectedCustomerId !== GENERAL_CUSTOMER.id && (
-                    <div className="mt-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                    <div className="mt-2 rounded-2xl border border-[#B5C4FF] bg-[#E3E9FF] px-3 py-2 text-sm text-[#10288C]">
                       Este cliente quedará vinculado al pedido para futuras compras y reportes.
                     </div>
                   )}
@@ -659,7 +659,7 @@ export default function PosTerminal() {
                           className={[
                             'rounded-[1.35rem] border px-4 py-4 text-left transition',
                             active
-                              ? 'border-[var(--brand)] bg-[var(--brand)] text-white shadow-[0_10px_24px_rgba(114,14,16,0.18)]'
+                              ? 'border-[var(--brand)] bg-[var(--brand)] text-white shadow-[0_10px_24px_rgba(16,40,140,0.18)]'
                               : 'border-[var(--app-border)] bg-white text-[var(--app-text)] hover:border-[var(--brand)]',
                           ].join(' ')}
                           onClick={() => setPaymentMethod(method.value)}

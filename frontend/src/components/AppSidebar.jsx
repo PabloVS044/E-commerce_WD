@@ -118,7 +118,7 @@ function AppSidebar() {
               className={[
                 'flex items-center gap-3 rounded-[1.2rem] px-4 py-3 font-semibold no-underline transition',
                 active
-                  ? 'bg-[var(--brand)] text-white shadow-[0_14px_28px_rgba(100,22,27,0.24)]'
+                  ? 'bg-[var(--brand)] text-white shadow-[0_14px_28px_rgba(16,40,140,0.24)]'
                   : 'text-[var(--app-text-muted)] hover:bg-white/80 hover:text-[var(--brand)]',
               ].join(' ')}
             >

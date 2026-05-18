@@ -7,11 +7,11 @@ import { formatMoney, ORDER_TIMELINE, summarizeOrderModifications } from '../../
 
 function StepCard({ label, active }) {
   return (
-    <div className={`rounded-3xl border p-3 ${active ? 'border-emerald-200 bg-emerald-50' : 'border-[var(--app-border)] bg-white'}`}>
+    <div className={`rounded-3xl border p-3 ${active ? 'border-[#B5C4FF] bg-[#EEF2FF]' : 'border-[var(--app-border)] bg-white'}`}>
       <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--app-text-muted)]">
         Etapa
       </div>
-      <div className={`mt-1 font-semibold ${active ? 'text-emerald-700' : 'text-[var(--app-text-muted)]'}`}>
+      <div className={`mt-1 font-semibold ${active ? 'text-[#10288C]' : 'text-[var(--app-text-muted)]'}`}>
         {label.replaceAll('_', ' ')}
       </div>
     </div>

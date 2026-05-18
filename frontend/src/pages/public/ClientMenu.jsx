@@ -34,7 +34,7 @@ function ProductCard({ product, onSelect }) {
               {product.categoria}
             </span>
             {product.es_combo && (
-              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-amber-700">
+              <span className="rounded-full border border-[#B5C4FF] bg-[#E3E9FF] px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[#10288C]">
                 Combo
               </span>
             )}
@@ -221,7 +221,7 @@ export default function ClientMenu() {
                         className={[
                           'inline-flex min-h-[3.15rem] items-center justify-center rounded-2xl border px-4 py-3 text-sm font-semibold transition',
                           active
-                            ? 'border-[var(--brand)] bg-[var(--brand)] text-white shadow-[0_10px_24px_rgba(114,14,16,0.18)]'
+                            ? 'border-[var(--brand)] bg-[var(--brand)] text-white shadow-[0_10px_24px_rgba(16,40,140,0.18)]'
                             : 'border-[var(--app-border)] bg-white text-[var(--app-text)] hover:border-[var(--brand)] hover:text-[var(--brand)]',
                         ].join(' ')}
                         onClick={() => setSelectedCategory(category)}

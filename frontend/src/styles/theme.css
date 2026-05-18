@@ -4,27 +4,27 @@
 :root {
   --font-sans: 'Manrope', sans-serif;
   --font-display: 'Sora', sans-serif;
-  --app-surface: #f4efec;
-  --app-surface-soft: #f8f3f0;
-  --app-surface-muted: #e7ddd7;
+  --app-surface: #f7f8fc;
+  --app-surface-soft: #f1f4ff;
+  --app-surface-muted: #d8e0f4;
   --app-surface-card: #ffffff;
-  --app-border: rgba(113, 84, 74, 0.16);
-  --app-border-strong: rgba(79, 53, 45, 0.28);
-  --app-text: #171718;
-  --app-text-muted: #6a5a56;
-  --brand: #64161b;
-  --brand-dark: #411014;
-  --brand-soft: #f4d9d0;
-  --accent: #b46a1f;
-  --client-hero: #f7f0eb;
-  --ops-hero: #f4eeea;
+  --app-border: rgba(28, 40, 89, 0.12);
+  --app-border-strong: rgba(28, 40, 89, 0.22);
+  --app-text: #1c2859;
+  --app-text-muted: #66739b;
+  --brand: #10288c;
+  --brand-dark: #1c2859;
+  --brand-soft: #e3e9ff;
+  --accent: #7c93f2;
+  --client-hero: #f8faff;
+  --ops-hero: #f4f6fd;
   --success-soft: #dbf5e4;
   --warning-soft: #fff0d1;
   --danger-soft: #ffe0da;
   --info-soft: #ddf1ff;
-  --shadow-soft: 0 18px 42px rgba(31, 19, 16, 0.08);
-  --shadow-panel: 0 28px 70px rgba(31, 19, 16, 0.14);
-  --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 24px 50px rgba(71, 35, 24, 0.12);
+  --shadow-soft: 0 18px 42px rgba(28, 40, 89, 0.07);
+  --shadow-panel: 0 28px 70px rgba(28, 40, 89, 0.12);
+  --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.6), 0 24px 50px rgba(28, 40, 89, 0.1);
 }
 
 @layer base {
@@ -404,11 +404,11 @@
   }
 
   .bg-dark {
-    background: #1f2937;
+    background: var(--brand-dark);
   }
 
   .bg-secondary {
-    background: #6b7280;
+    background: var(--accent);
     color: #fff;
   }
 
@@ -418,7 +418,7 @@
   }
 
   .bg-light {
-    background: #f7f3f2;
+    background: var(--app-surface-soft);
   }
 
   .text-bg-light {
@@ -427,8 +427,8 @@
   }
 
   .text-bg-warning {
-    background: #f4d38d;
-    color: #6b3d00;
+    background: var(--brand-soft);
+    color: var(--brand-dark);
   }
 
   .badge {
@@ -478,7 +478,7 @@
   }
 
   .border-light-subtle {
-    border-color: #ece3e1;
+    border-color: rgba(28, 40, 89, 0.1);
   }
 
   .btn {
@@ -549,7 +549,7 @@
 
   .btn-outline-secondary:hover,
   .btn-outline-secondary:focus-visible {
-    background: #f4efee;
+    background: var(--app-surface-soft);
     border-color: var(--brand);
   }
 
@@ -645,7 +645,7 @@
   .form-select:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(162, 63, 0, 0.14);
+    box-shadow: 0 0 0 3px rgba(124, 147, 242, 0.2);
   }
 
   .form-check {
@@ -706,7 +706,7 @@
   }
 
   .surface-panel {
-    background: rgba(248, 243, 240, 0.9);
+    background: rgba(248, 250, 255, 0.94);
     border: 1px solid var(--app-border);
     border-radius: 1.35rem;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
@@ -799,7 +799,7 @@
 
   .app-button-neutral:hover,
   .app-button-neutral:focus-visible {
-    background: #f4efee;
+    background: var(--app-surface-soft);
     border-color: var(--brand);
     transform: translateY(-1px);
   }
@@ -864,7 +864,7 @@
   .app-select:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(162, 63, 0, 0.14);
+    box-shadow: 0 0 0 3px rgba(124, 147, 242, 0.2);
   }
 
   .app-checkbox-row {
@@ -985,7 +985,7 @@
   .backoffice-frame {
     min-height: 100vh;
     display: flex;
-    background: #fcf9f8;
+    background: #f7f8fc;
   }
 
   .backoffice-sidebar {
@@ -1051,7 +1051,7 @@
   .sidebar-link.active {
     background: var(--brand);
     color: #fff;
-    box-shadow: 0 10px 24px rgba(114, 14, 16, 0.18);
+    box-shadow: 0 10px 24px rgba(16, 40, 140, 0.2);
   }
 
   .sidebar-footer {
@@ -1183,7 +1183,7 @@
     width: 4rem;
     height: 4rem;
     border-radius: 1.15rem;
-    background: rgba(244, 217, 208, 0.92);
+    background: rgba(227, 233, 255, 0.72);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1233,7 +1233,7 @@
   }
 
   .table-hover tbody tr:hover {
-    background: rgba(252, 245, 243, 0.8);
+    background: rgba(227, 233, 255, 0.45);
   }
 
   .align-middle > :not(caption) > * > * {
@@ -1245,7 +1245,7 @@
     height: 0.5rem;
     overflow: hidden;
     border-radius: 9999px;
-    background: #f1e7e5;
+    background: rgba(181, 196, 255, 0.4);
   }
 
   .progress-bar {
@@ -1292,8 +1292,8 @@
   }
 
   .badge-soft-primary {
-    background: #e7e6ff;
-    color: #4b46a7;
+    background: var(--brand-soft);
+    color: var(--brand-dark);
   }
 
   .badge-soft-info,
@@ -1305,8 +1305,8 @@
   .badge-soft-secondary,
   .badge-soft-light,
   .soft-secondary {
-    background: #ebe7e7;
-    color: #5f5858;
+    background: rgba(227, 233, 255, 0.72);
+    color: var(--brand-dark);
   }
 
   .badge-soft-success,

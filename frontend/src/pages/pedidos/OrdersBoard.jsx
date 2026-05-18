@@ -13,11 +13,11 @@ import {
 } from '../../utils/orders';
 
 const STATUS_COLUMNS = [
-  { key: 'pendiente', title: 'Pendientes', tone: 'text-amber-700 bg-amber-100' },
-  { key: 'aprobado', title: 'Aprobados', tone: 'text-violet-700 bg-violet-100' },
-  { key: 'en_proceso', title: 'En proceso', tone: 'text-sky-700 bg-sky-100' },
-  { key: 'finalizado', title: 'Finalizados', tone: 'text-stone-700 bg-stone-200' },
-  { key: 'entregado', title: 'Entregados', tone: 'text-emerald-700 bg-emerald-100' },
+  { key: 'pendiente', title: 'Pendientes', tone: 'text-[#1C2859] bg-[#E3E9FF]' },
+  { key: 'aprobado', title: 'Aprobados', tone: 'text-[#10288C] bg-[#D6E0FF]' },
+  { key: 'en_proceso', title: 'En proceso', tone: 'text-[#10288C] bg-[#B5C4FF]' },
+  { key: 'finalizado', title: 'Finalizados', tone: 'text-[#1C2859] bg-[#EEF2FF]' },
+  { key: 'entregado', title: 'Entregados', tone: 'text-[#10288C] bg-[#7C93F2]/35' },
   { key: 'cancelado', title: 'Cancelados', tone: 'text-red-700 bg-red-100' },
 ];
 
@@ -199,7 +199,7 @@ export default function OrdersBoard() {
           </div>
           <button
             type="button"
-            className="inline-flex min-h-[3.25rem] items-center justify-center rounded-2xl bg-[var(--brand)] px-5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(114,14,16,0.22)] transition hover:bg-[var(--brand-dark)]"
+            className="inline-flex min-h-[3.25rem] items-center justify-center rounded-2xl bg-[var(--brand)] px-5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(16,40,140,0.22)] transition hover:bg-[var(--brand-dark)]"
             onClick={() => loadOrders()}
           >
             Refrescar

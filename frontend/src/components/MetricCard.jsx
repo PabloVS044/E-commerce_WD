@@ -1,11 +1,11 @@
 import Icon from './Icon';
 
 const TONE_CLASSES = {
-  primary: 'bg-[#f4ded4] text-[#7d1a20]',
-  warning: 'bg-[#ffe8c8] text-[#8a5b00]',
-  danger: 'bg-[#ffdcd6] text-[#9f1f16]',
-  info: 'bg-[#e3f2fb] text-[#0b6687]',
-  success: 'bg-[#dff3e5] text-[#0e7040]',
+  primary: 'bg-[#EEF2FF] text-[#10288C]',
+  warning: 'bg-[#F3F6FF] text-[#1C2859]',
+  danger: 'bg-[#F7F8FC] text-[#1C2859]',
+  info: 'bg-[#F5F7FF] text-[#10288C]',
+  success: 'bg-[#EAF0FF] text-[#10288C]',
 };
 
 export default function MetricCard({ label, value, hint, icon, tone = 'primary' }) {
@@ -13,7 +13,7 @@ export default function MetricCard({ label, value, hint, icon, tone = 'primary' 
 
   return (
     <div className="relative h-full overflow-hidden rounded-[1.7rem] border border-[var(--app-border)] bg-white p-5 shadow-[var(--shadow-glow)]">
-      <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-[rgba(100,22,27,0.12)]" />
+      <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-[rgba(16,40,140,0.12)]" />
       <div className="flex items-start justify-between gap-3">
         <div className={`metric-icon ${toneClass}`}>
           <Icon name={icon} className="h-5 w-5" />
