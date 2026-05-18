@@ -74,7 +74,7 @@ const NAV_ITEMS = [
   },
 ];
 
-function AppSidebar() {
+function AppSidebar({ isMobileOpen = false, onClose = () => {} }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -82,32 +82,51 @@ function AppSidebar() {
   const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(user?.rol));
 
   const handleClientPortal = useCallback(() => {
+    onClose();
     navigate('/');
-  }, [navigate]);
+  }, [navigate, onClose]);
 
   const handleLogout = useCallback(async () => {
     try {
       await logout();
     } finally {
+      onClose();
       navigate('/login');
     }
-  }, [logout, navigate]);
+  }, [logout, navigate, onClose]);
 
   return (
-    <aside className="sticky top-0 z-30 flex h-auto w-full flex-col border-b border-[var(--app-border)] bg-white/95 p-5 backdrop-blur lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:h-screen lg:w-[280px] lg:overflow-y-auto lg:border-b-0 lg:shadow-[inset_-1px_0_0_var(--app-border)]">
+    <aside
+      className={[
+        'fixed inset-y-0 left-0 z-50 flex h-screen w-[280px] max-w-[88vw] flex-col border-r border-[var(--app-border)] bg-white/98 p-5 shadow-[var(--shadow-panel)] backdrop-blur transition-transform duration-200 ease-out',
+        isMobileOpen ? 'translate-x-0' : '-translate-x-full',
+        'lg:fixed lg:translate-x-0 lg:shadow-[inset_-1px_0_0_var(--app-border)]',
+      ].join(' ')}
+      aria-hidden={!isMobileOpen}
+    >
       <div className="mb-4 border-b border-[var(--app-border)] pb-4">
-        <Link to={getRoleHomePath(user?.rol)} className="flex items-center gap-4 no-underline">
-          <span className="inline-flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-[1.35rem] bg-[var(--brand)] text-xl text-white shadow-[var(--shadow-panel)]">
-            <Icon name="shop" className="h-6 w-6" />
-          </span>
-          <div>
-            <div className="font-[var(--font-display)] text-[1.02rem] font-bold text-[var(--app-text)]">Tacos El Pepe</div>
-            <div className="mt-1 inline-flex rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">Operación premium</div>
-          </div>
-        </Link>
+        <div className="flex items-start justify-between gap-3">
+          <Link to={getRoleHomePath(user?.rol)} className="flex items-center gap-4 no-underline" onClick={onClose}>
+            <span className="inline-flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-[1.35rem] bg-[var(--brand)] text-xl text-white shadow-[var(--shadow-panel)]">
+              <Icon name="shop" className="h-6 w-6" />
+            </span>
+            <div>
+              <div className="font-[var(--font-display)] text-[1.02rem] font-bold text-[var(--app-text)]">Tacos El Pepe</div>
+              <div className="mt-1 inline-flex rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">Operación premium</div>
+            </div>
+          </Link>
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--app-border)] bg-white text-[var(--app-text)] transition hover:border-[var(--brand)] hover:text-[var(--brand)] lg:hidden"
+            onClick={onClose}
+            aria-label="Cerrar navegación"
+          >
+            <Icon name="close" className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
-      <div className="grid gap-2 lg:flex-1">
+      <div className="grid flex-1 gap-2 overflow-y-auto">
         {visibleItems.map((item) => {
           const active = item.match(location.pathname);
 
@@ -115,6 +134,7 @@ function AppSidebar() {
             <Link
               key={item.to}
               to={item.to}
+              onClick={onClose}
               className={[
                 'flex items-center gap-3 rounded-[1.2rem] px-4 py-3 font-semibold no-underline transition',
                 active

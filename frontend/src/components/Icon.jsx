@@ -128,6 +128,11 @@ const iconShapes = {
       <circle cx="12" cy="11" r="2.5" />
     </>
   ),
+  menu: (
+    <>
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </>
+  ),
   people: (
     <>
       <circle cx="9" cy="9" r="2.5" />
