@@ -21,7 +21,8 @@ function StepCard({ label, active }) {
 export default function ClientTracking() {
   const [searchParams] = useSearchParams();
   const { latestOrderCode, fetchOrderByCode } = useCustomerUi();
-  const defaultCode = searchParams.get('codigo') || latestOrderCode || '';
+  const urlCode = searchParams.get('codigo') || '';
+  const defaultCode = urlCode || latestOrderCode || '';
 
   const [inputCode, setInputCode] = useState(defaultCode);
   const [activeCode, setActiveCode] = useState(defaultCode);
@@ -29,10 +30,45 @@ export default function ClientTracking() {
   const [loading, setLoading] = useState(Boolean(defaultCode));
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    const resolvedCode = urlCode || latestOrderCode || '';
+    setInputCode((currentCode) => (currentCode === resolvedCode ? currentCode : resolvedCode));
+    setActiveCode((currentCode) => (currentCode === resolvedCode ? currentCode : resolvedCode));
+    setLoading((currentLoading) => {
+      const nextLoading = Boolean(resolvedCode);
+      return currentLoading === nextLoading ? currentLoading : nextLoading;
+    });
+  }, [latestOrderCode, urlCode]);
+
   const currentStep = useMemo(
     () => (order ? ORDER_TIMELINE.indexOf(order.estado) : -1),
     [order]
   );
+  const safeOrder = useMemo(() => {
+    if (!order || typeof order !== 'object') {
+      return null;
+    }
+
+    return {
+      codigo: order.codigo || activeCode,
+      fecha_creacion: order.fecha_creacion || null,
+      estado: order.estado || 'pendiente',
+      canal: order.canal || 'online',
+      subtotal: Number(order.subtotal || 0),
+      total: Number(order.total || 0),
+      notas: order.notas || '',
+      cliente: {
+        nombre: order.cliente?.nombre || 'Cliente',
+        email: order.cliente?.email || '',
+        telefono: order.cliente?.telefono || '',
+      },
+      pago: {
+        metodo: order.pago?.metodo || '',
+        estado: order.pago?.estado || '',
+      },
+      items: Array.isArray(order.items) ? order.items : [],
+    };
+  }, [activeCode, order]);
 
   const loadOrder = useCallback(async (code) => {
     const trimmed = String(code || '').trim().toUpperCase();
@@ -141,19 +177,25 @@ export default function ClientTracking() {
                 <p className="fw-semibold mb-2">No encontramos ese pedido</p>
                 <p className="text-muted mb-0">{error}</p>
               </div>
+            ) : !safeOrder ? (
+              <div className="surface-card p-5 empty-state">
+                <div className="fs-2 mb-2"><Icon name="mapPin" className="mx-auto h-8 w-8" /></div>
+                <p className="fw-semibold mb-2">No pudimos interpretar el pedido</p>
+                <p className="text-muted mb-0">Intenta buscarlo de nuevo en unos segundos.</p>
+              </div>
             ) : (
               <div className="surface-card p-4 sm:p-5">
                 <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="small text-uppercase text-muted fw-semibold">Código</div>
-                    <div className="h3 mb-2">{order.codigo}</div>
+                    <div className="h3 mb-2">{safeOrder.codigo}</div>
                     <div className="text-muted">
-                      Creado el {new Date(order.fecha_creacion).toLocaleString('es-GT')}
+                      Creado el {safeOrder.fecha_creacion ? new Date(safeOrder.fecha_creacion).toLocaleString('es-GT') : 'sin fecha'}
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <StatusBadge value={order.estado} />
-                    <StatusBadge value={order.pago?.estado} />
+                    <StatusBadge value={safeOrder.estado} />
+                    <StatusBadge value={safeOrder.pago.estado} />
                   </div>
                 </div>
 
@@ -170,37 +212,37 @@ export default function ClientTracking() {
                     <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--app-text-muted)]">
                       Cliente
                     </div>
-                    <div className="mt-1 font-semibold text-[var(--app-text)]">{order.cliente.nombre}</div>
+                    <div className="mt-1 font-semibold text-[var(--app-text)]">{safeOrder.cliente.nombre}</div>
                   </div>
                   <div className="surface-panel px-3 py-3">
                     <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--app-text-muted)]">
                       Canal
                     </div>
-                    <div className="mt-1 font-semibold text-[var(--app-text)]">{order.canal}</div>
+                    <div className="mt-1 font-semibold text-[var(--app-text)]">{safeOrder.canal}</div>
                   </div>
                   <div className="surface-panel px-3 py-3">
                     <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--app-text-muted)]">
                       Pago
                     </div>
-                    <div className="mt-1 font-semibold text-[var(--app-text)]">{order.pago?.metodo || 'Sin definir'}</div>
+                    <div className="mt-1 font-semibold text-[var(--app-text)]">{safeOrder.pago.metodo || 'Sin definir'}</div>
                   </div>
                   <div className="surface-panel px-3 py-3">
                     <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--app-text-muted)]">
                       Total
                     </div>
-                    <div className="mt-1 font-semibold text-[var(--brand)]">{formatMoney(order.total)}</div>
+                    <div className="mt-1 font-semibold text-[var(--brand)]">{formatMoney(safeOrder.total)}</div>
                   </div>
                 </div>
 
-                {order.notas && (
+                {safeOrder.notas && (
                   <div className="mt-4 rounded-3xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] px-4 py-3 text-sm leading-6 text-[var(--app-text-muted)]">
-                    <span className="font-semibold text-[var(--app-text)]">Notas:</span> {order.notas}
+                    <span className="font-semibold text-[var(--app-text)]">Notas:</span> {safeOrder.notas}
                   </div>
                 )}
 
                 <h2 className="mt-5 h5 mb-3">Detalle del pedido</h2>
                 <div className="space-y-3">
-                  {order.items.map((item) => {
+                  {safeOrder.items.map((item) => {
                     const modifications = summarizeOrderModifications(item.modificaciones);
 
                     return (
@@ -232,11 +274,11 @@ export default function ClientTracking() {
                   <div className="surface-panel w-full p-3 sm:w-auto" style={{ minWidth: 280 }}>
                     <div className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-sm text-[var(--app-text-muted)]">
                       <span>Subtotal</span>
-                      <span>{formatMoney(order.subtotal)}</span>
+                      <span>{formatMoney(safeOrder.subtotal)}</span>
                     </div>
                     <div className="mt-3 grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-[1.05rem] font-bold text-[var(--app-text)]">
                       <span>Total</span>
-                      <span>{formatMoney(order.total)}</span>
+                      <span>{formatMoney(safeOrder.total)}</span>
                     </div>
                   </div>
                 </div>

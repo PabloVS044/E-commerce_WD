@@ -1,5 +1,5 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+const { loadBackendEnv } = require('../src/config/loadEnv');
+loadBackendEnv();
 
 const bcrypt = require('bcryptjs');
 const { Client } = require('pg');
