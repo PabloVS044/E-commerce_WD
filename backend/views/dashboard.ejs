@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Tacos El Pepe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <%- include('./partials/navbar') %>
+
+    <div class="container mt-4">
+        <%- include('./partials/flash') %>
+
+        <h4 class="mb-1">Bienvenido, <%= user.nombre %> <%= user.apellido %></h4>
+        <p class="text-muted mb-4">Panel de administración — Tacos El Pepe</p>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="display-4 mb-3">🍽️</div>
+                        <h5 class="card-title">Productos</h5>
+                        <p class="card-text text-muted">Gestiona el menú: tacos, bebidas y combos.</p>
+                        <a href="/productos" class="btn btn-dark">Ver productos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="display-4 mb-3">📦</div>
+                        <h5 class="card-title">Insumos</h5>
+                        <p class="card-text text-muted">Controla el inventario de ingredientes y materiales.</p>
+                        <a href="/insumos" class="btn btn-dark">Ver insumos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="display-4 mb-3">📊</div>
+                        <h5 class="card-title">Reportes</h5>
+                        <p class="card-text text-muted">Consulta ventas, productos y estadísticas del negocio.</p>
+                        <a href="/reportes/ventas" class="btn btn-dark">Ver reportes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

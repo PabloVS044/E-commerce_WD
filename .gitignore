@@ -1,0 +1,24 @@
+# Entorno
+.env
+.env.local
+
+# Dependencias y builds
+node_modules/
+dist/
+build/
+coverage/
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+# IDE y sistema
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.codex/
+.azure-deploy/
