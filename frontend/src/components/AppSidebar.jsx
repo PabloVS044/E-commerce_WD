@@ -94,15 +94,15 @@ function AppSidebar() {
   }, [logout, navigate]);
 
   return (
-    <aside className="sticky top-0 z-30 flex h-auto w-full flex-col border-b border-[var(--app-border)] bg-white/92 p-5 backdrop-blur lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:h-screen lg:w-[280px] lg:overflow-y-auto lg:border-b-0 lg:shadow-[inset_-1px_0_0_var(--app-border)]">
+    <aside className="sticky top-0 z-30 flex h-auto w-full flex-col border-b border-[var(--app-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.93),rgba(247,241,238,0.92))] p-5 backdrop-blur lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:h-screen lg:w-[280px] lg:overflow-y-auto lg:border-b-0 lg:shadow-[inset_-1px_0_0_var(--app-border)]">
       <div className="mb-4 border-b border-[var(--app-border)] pb-4">
         <Link to={getRoleHomePath(user?.rol)} className="flex items-center gap-4 no-underline">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand)] text-xl text-white shadow-[var(--shadow-soft)]">
+          <span className="inline-flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-[1.35rem] bg-[linear-gradient(135deg,var(--brand)_0%,#8f2327_100%)] text-xl text-white shadow-[var(--shadow-panel)]">
             <Icon name="shop" className="h-6 w-6" />
           </span>
           <div>
-            <div className="font-semibold text-[var(--app-text)]">Tacos El Pepe</div>
-            <div className="text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[var(--app-text-muted)]">Operación</div>
+            <div className="font-[var(--font-display)] text-[1.02rem] font-bold text-[var(--app-text)]">Tacos El Pepe</div>
+            <div className="mt-1 inline-flex rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">Operación premium</div>
           </div>
         </Link>
       </div>
@@ -116,10 +116,10 @@ function AppSidebar() {
               key={item.to}
               to={item.to}
               className={[
-                'flex items-center gap-3 rounded-2xl px-4 py-3 font-semibold no-underline transition',
+                'flex items-center gap-3 rounded-[1.2rem] px-4 py-3 font-semibold no-underline transition',
                 active
-                  ? 'bg-[var(--brand)] text-white shadow-[0_10px_24px_rgba(114,14,16,0.18)]'
-                  : 'text-[var(--app-text-muted)] hover:bg-[var(--app-surface-soft)] hover:text-[var(--brand)]',
+                  ? 'bg-[linear-gradient(135deg,var(--brand)_0%,#8f2327_100%)] text-white shadow-[0_14px_28px_rgba(100,22,27,0.24)]'
+                  : 'text-[var(--app-text-muted)] hover:bg-white/80 hover:text-[var(--brand)]',
               ].join(' ')}
             >
               <Icon name={item.icon} className="h-5 w-5" />
@@ -130,6 +130,10 @@ function AppSidebar() {
       </div>
 
       <div className="mt-4 border-t border-[var(--app-border)] pt-4">
+        <div className="mb-3 rounded-[1.2rem] border border-[var(--app-border)] bg-white/80 px-4 py-3">
+          <div className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Modo activo</div>
+          <div className="mt-2 font-semibold text-[var(--app-text)]">Backoffice conectado</div>
+        </div>
         <button
           type="button"
           className="app-button app-button-secondary mb-2 w-full"

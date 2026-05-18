@@ -5,7 +5,6 @@ import Icon from '../../components/Icon';
 import LoadingScreen from '../../components/LoadingScreen';
 import ProductCustomizer from '../../components/ProductCustomizer';
 import { api } from '../../api/api';
-import { useAuth } from '../../context/AuthContext';
 import { getProductGlyph } from '../../utils/catalog';
 import {
   buildLineKey,
@@ -149,7 +148,6 @@ function upsertTicketLine(current, productId, config, editingKey = null) {
 }
 
 export default function PosTerminal() {
-  const { user } = useAuth();
   const [catalog, setCatalog] = useState([]);
   const [clientes, setClientes] = useState([GENERAL_CUSTOMER]);
   const [loading, setLoading] = useState(true);

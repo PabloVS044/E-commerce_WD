@@ -86,6 +86,39 @@ export default function Dashboard() {
     >
       {error && <div className="app-notice app-notice-error mb-4">{error}</div>}
 
+      <section className="hero-panel mb-5 overflow-hidden px-5 py-5 sm:px-6 lg:px-7 lg:py-6">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)] lg:items-end">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--app-text-muted)]">
+              <span className="inline-flex h-2 w-2 rounded-full bg-[var(--brand)]" />
+              Sala de control
+            </div>
+            <h2 className="mt-4 max-w-[14ch] font-[var(--font-display)] text-[clamp(2.2rem,4vw,3.3rem)] font-extrabold leading-[0.95] text-[var(--app-text)]">
+              Operación sincronizada para caja, cocina e inventario.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--app-text-muted)]">
+              Mantén visión del turno, cuellos de botella y tracción comercial desde una interfaz preparada para ritmo alto.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="rounded-[1.35rem] border border-white/70 bg-white/78 px-4 py-4 shadow-[var(--shadow-soft)]">
+              <div className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Ingresos detectados</div>
+              <div className="mt-2 font-[var(--font-display)] text-[1.85rem] font-extrabold text-[var(--app-text)]">
+                {latestDaily ? `Q${Number(latestDaily.total_ventas).toFixed(2)}` : 'Q0.00'}
+              </div>
+            </div>
+            <div className="rounded-[1.35rem] border border-white/70 bg-white/78 px-4 py-4 shadow-[var(--shadow-soft)]">
+              <div className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Pedidos abiertos</div>
+              <div className="mt-2 font-[var(--font-display)] text-[1.85rem] font-extrabold text-[var(--app-text)]">{activeOrders.length}</div>
+            </div>
+            <div className="rounded-[1.35rem] border border-white/70 bg-white/78 px-4 py-4 shadow-[var(--shadow-soft)]">
+              <div className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Alertas de stock</div>
+              <div className="mt-2 font-[var(--font-display)] text-[1.85rem] font-extrabold text-[var(--app-text)]">{stock.length}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="mb-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div>
           <MetricCard
@@ -131,7 +164,7 @@ export default function Dashboard() {
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <div className="text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Atajos</div>
-                <h2 className="text-2xl font-bold text-[var(--app-text)]">Acciones rápidas</h2>
+                <h2 className="font-[var(--font-display)] text-[1.85rem] font-bold text-[var(--app-text)]">Acciones rápidas</h2>
               </div>
               <div className="product-icon text-[var(--brand)]">
                 <Icon name="lightning" className="h-8 w-8" />
@@ -156,7 +189,7 @@ export default function Dashboard() {
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <div className="text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Top del día</div>
-                <h2 className="text-2xl font-bold text-[var(--app-text)]">Productos con más movimiento</h2>
+                <h2 className="font-[var(--font-display)] text-[1.85rem] font-bold text-[var(--app-text)]">Productos con más movimiento</h2>
               </div>
               <Link to="/reportes" className="app-button app-button-secondary app-button-sm">Ver reportes</Link>
             </div>
@@ -201,7 +234,7 @@ export default function Dashboard() {
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <div className="text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Flujo operativo</div>
-                <h2 className="text-2xl font-bold text-[var(--app-text)]">Pedidos que requieren atención</h2>
+                <h2 className="font-[var(--font-display)] text-[1.85rem] font-bold text-[var(--app-text)]">Pedidos que requieren atención</h2>
               </div>
               <Link to="/pedidos" className="app-button app-button-secondary app-button-sm">Abrir monitor</Link>
             </div>

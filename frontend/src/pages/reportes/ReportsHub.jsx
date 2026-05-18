@@ -4,6 +4,7 @@ import EmptyState from '../../components/EmptyState';
 import LoadingScreen from '../../components/LoadingScreen';
 import MetricCard from '../../components/MetricCard';
 import { api } from '../../api/api';
+import { buildSectionedCsv, downloadCsv } from '../../utils/reportExport';
 
 function money(value) {
   return `Q${Number(value || 0).toFixed(2)}`;
@@ -35,6 +36,7 @@ function TableShell({ title, description, badge, children, isEmpty, emptyState }
 export default function ReportsHub() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [exportNotice, setExportNotice] = useState('');
   const [ventas, setVentas] = useState([]);
   const [diario, setDiario] = useState([]);
   const [clientes, setClientes] = useState([]);
@@ -88,6 +90,56 @@ export default function ReportsHub() {
     };
   }, [ventas, diario]);
 
+  const exportSections = useMemo(() => ([
+    {
+      title: 'Ventas por producto',
+      columns: [
+        { key: 'producto', label: 'Producto' },
+        { key: 'categoria', label: 'Categoria' },
+        { key: 'unidades_vendidas', label: 'Unidades vendidas' },
+        { key: 'ingresos_totales', label: 'Ingresos totales' },
+      ],
+      rows: ventas,
+    },
+    {
+      title: 'Ventas diarias',
+      columns: [
+        { key: 'fecha', label: 'Fecha' },
+        { key: 'num_pedidos', label: 'Pedidos' },
+        { key: 'total_ventas', label: 'Total ventas' },
+        { key: 'ticket_promedio', label: 'Ticket promedio' },
+      ],
+      rows: diario,
+    },
+    {
+      title: 'Clientes frecuentes',
+      columns: [
+        { key: 'cliente', label: 'Cliente' },
+        { key: 'email', label: 'Email' },
+        { key: 'total_pedidos', label: 'Pedidos' },
+        { key: 'gasto_total', label: 'Gasto total' },
+      ],
+      rows: clientes,
+    },
+    {
+      title: 'Ranking SQL',
+      columns: [
+        { key: 'ranking', label: 'Ranking' },
+        { key: 'producto', label: 'Producto' },
+        { key: 'categoria', label: 'Categoria' },
+        { key: 'ingresos', label: 'Ingresos' },
+        { key: 'pct_del_total', label: 'Pct del total' },
+      ],
+      rows: ranking,
+    },
+  ]), [clientes, diario, ranking, ventas]);
+
+  const handleExportCsv = () => {
+    const csv = buildSectionedCsv(exportSections);
+    downloadCsv('tacos-el-pepe-reportes.csv', csv);
+    setExportNotice('Reporte exportado a CSV.');
+  };
+
   if (loading) {
     return <LoadingScreen label="Cargando reportes..." />;
   }
@@ -96,8 +148,45 @@ export default function ReportsHub() {
     <AppShell
       title="Reportes"
       subtitle="Resumen operativo y comercial listo para caja o administración."
+      actions={(
+        <button type="button" className="app-button app-button-primary" onClick={handleExportCsv}>
+          Exportar CSV
+        </button>
+      )}
     >
       {error && <div className="alert alert-danger">{error}</div>}
+      {exportNotice && <div className="app-notice app-notice-success mb-4">{exportNotice}</div>}
+
+      <section className="hero-panel mb-5 overflow-hidden px-5 py-5 sm:px-6 lg:px-7 lg:py-6">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)] lg:items-end">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/72 px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--app-text-muted)]">
+              <span className="inline-flex h-2 w-2 rounded-full bg-[var(--brand)]" />
+              Intelligence deck
+            </div>
+            <h2 className="mt-4 max-w-[15ch] font-[var(--font-display)] text-[clamp(2.1rem,3vw,3rem)] font-extrabold leading-[0.95] text-[var(--app-text)]">
+              Reportes listos para operación, auditoría y toma de decisiones.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--app-text-muted)]">
+              Consolida ventas, recurrencia y concentración de ingresos en una sola superficie con exportación inmediata para análisis externo.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="rounded-[1.35rem] border border-white/70 bg-white/78 px-4 py-4 shadow-[var(--shadow-soft)]">
+              <div className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Ingresos agregados</div>
+              <div className="mt-2 font-[var(--font-display)] text-[1.85rem] font-extrabold text-[var(--app-text)]">{money(metrics.totalIngresos)}</div>
+            </div>
+            <div className="rounded-[1.35rem] border border-white/70 bg-white/78 px-4 py-4 shadow-[var(--shadow-soft)]">
+              <div className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Pedidos procesados</div>
+              <div className="mt-2 font-[var(--font-display)] text-[1.85rem] font-extrabold text-[var(--app-text)]">{metrics.totalPedidos}</div>
+            </div>
+            <div className="rounded-[1.35rem] border border-white/70 bg-white/78 px-4 py-4 shadow-[var(--shadow-soft)]">
+              <div className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--app-text-muted)]">Producto líder</div>
+              <div className="mt-2 text-base font-extrabold text-[var(--app-text)]">{metrics.mejorProducto}</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
         <MetricCard label="Ingresos acumulados" value={money(metrics.totalIngresos)} icon="cash-stack" />

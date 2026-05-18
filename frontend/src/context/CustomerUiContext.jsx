@@ -1,11 +1,13 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import { api } from '../api/api';
 import {
-  buildLineKey,
-  normalizeLineConfig,
-  sameLineSelection,
   toApiOrderItems,
 } from '../utils/orders';
+import {
+  createCustomerCartState,
+  customerCartReducer,
+  CUSTOMER_CART_ACTIONS,
+} from './customerCartReducer';
 
 const CART_KEY = 'tacos-el-pepe-cart';
 const LAST_ORDER_KEY = 'tacos-el-pepe-last-order-code';
@@ -34,8 +36,11 @@ export function CustomerUiProvider({ children }) {
   const [categories, setCategories] = useState([]);
   const [loadingCatalog, setLoadingCatalog] = useState(true);
   const [catalogError, setCatalogError] = useState('');
-  const [cart, setCart] = useState(() => readStorage(CART_KEY, []));
-  const [latestOrderCode, setLatestOrderCode] = useState(() => readStorage(LAST_ORDER_KEY, ''));
+  const [{ cart, latestOrderCode }, dispatch] = useReducer(
+    customerCartReducer,
+    null,
+    () => createCustomerCartState(readStorage(CART_KEY, []), readStorage(LAST_ORDER_KEY, ''))
+  );
 
   const refreshCatalog = async () => {
     setLoadingCatalog(true);
@@ -140,54 +145,31 @@ export function CustomerUiProvider({ children }) {
   const hasBlockedItems = cartItems.some((item) => !item.can_order);
 
   const addConfiguredProduct = (product, config = {}) => {
-    const normalized = normalizeLineConfig(config);
-    const candidate = {
-      id_producto: Number(product.id_producto),
-      ...normalized,
-    };
-
-    setCart((current) => {
-      const existingIndex = current.findIndex((line) => sameLineSelection(line, candidate));
-
-      if (existingIndex >= 0) {
-        return current.map((line, index) => (
-          index === existingIndex
-            ? { ...line, cantidad: Number(line.cantidad || 1) + normalized.cantidad }
-            : line
-        ));
-      }
-
-      return [
-        ...current,
-        {
-          key: buildLineKey(),
-          id_producto: candidate.id_producto,
-          cantidad: normalized.cantidad,
-          extras: normalized.extras,
-          removals: normalized.removals,
-        },
-      ];
+    dispatch({
+      type: CUSTOMER_CART_ACTIONS.ADD_CONFIGURED_PRODUCT,
+      product,
+      config,
     });
   };
 
   const updateCartItem = (key, nextQuantity) => {
-    const normalizedQuantity = Number.parseInt(nextQuantity, 10) || 0;
-
-    if (normalizedQuantity <= 0) {
-      setCart((current) => current.filter((item) => item.key !== key));
-      return;
-    }
-
-    setCart((current) => current.map((item) => (
-      item.key === key ? { ...item, cantidad: normalizedQuantity } : item
-    )));
+    dispatch({
+      type: CUSTOMER_CART_ACTIONS.UPDATE_CART_ITEM,
+      key,
+      nextQuantity,
+    });
   };
 
   const removeCartItem = (key) => {
-    setCart((current) => current.filter((item) => item.key !== key));
+    dispatch({
+      type: CUSTOMER_CART_ACTIONS.REMOVE_CART_ITEM,
+      key,
+    });
   };
 
-  const clearCart = () => setCart([]);
+  const clearCart = () => {
+    dispatch({ type: CUSTOMER_CART_ACTIONS.CLEAR_CART });
+  };
 
   const placeOrder = async (customerInfo) => {
     if (!cart.length) {
@@ -213,8 +195,8 @@ export function CustomerUiProvider({ children }) {
     });
 
     const codigo = response.pedido?.codigo || '';
-    setLatestOrderCode(codigo);
-    setCart([]);
+    dispatch({ type: CUSTOMER_CART_ACTIONS.SET_LATEST_ORDER_CODE, code: codigo });
+    dispatch({ type: CUSTOMER_CART_ACTIONS.CLEAR_CART });
     await refreshCatalog();
     return response.pedido;
   };

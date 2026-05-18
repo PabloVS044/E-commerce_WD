@@ -1,27 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
-  --app-surface: #fcf9f8;
-  --app-surface-soft: #f6f3f2;
-  --app-surface-muted: #efe8e6;
+  --font-sans: 'Manrope', sans-serif;
+  --font-display: 'Sora', sans-serif;
+  --app-surface: #f4efec;
+  --app-surface-soft: #f8f3f0;
+  --app-surface-muted: #e7ddd7;
   --app-surface-card: #ffffff;
-  --app-border: #debfbc;
-  --app-border-strong: #b99b97;
-  --app-text: #1b1c1c;
-  --app-text-muted: #645452;
-  --brand: #720e10;
-  --brand-dark: #5b0b0d;
-  --brand-soft: #ffdad6;
-  --accent: #a23f00;
-  --client-hero: linear-gradient(135deg, #fffdfa 0%, #f9f0ec 48%, #f4e6de 100%);
-  --ops-hero: linear-gradient(145deg, #ffffff 0%, #f6f0ee 100%);
-  --success-soft: #dff6ea;
-  --warning-soft: #fff0d3;
-  --danger-soft: #ffe1de;
-  --info-soft: #dff4fb;
-  --shadow-soft: 0 16px 36px rgba(58, 34, 31, 0.08);
-  --shadow-panel: 0 22px 48px rgba(58, 34, 31, 0.1);
+  --app-border: rgba(113, 84, 74, 0.16);
+  --app-border-strong: rgba(79, 53, 45, 0.28);
+  --app-text: #171718;
+  --app-text-muted: #6a5a56;
+  --brand: #64161b;
+  --brand-dark: #411014;
+  --brand-soft: #f4d9d0;
+  --accent: #b46a1f;
+  --client-hero: linear-gradient(135deg, #fffaf5 0%, #f4e5db 46%, #e8d6cc 100%);
+  --ops-hero: linear-gradient(145deg, rgba(255,255,255,0.96) 0%, rgba(245,237,232,0.94) 100%);
+  --success-soft: #dbf5e4;
+  --warning-soft: #fff0d1;
+  --danger-soft: #ffe0da;
+  --info-soft: #ddf1ff;
+  --shadow-soft: 0 18px 42px rgba(31, 19, 16, 0.08);
+  --shadow-panel: 0 28px 70px rgba(31, 19, 16, 0.14);
+  --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 24px 50px rgba(71, 35, 24, 0.12);
 }
 
 @layer base {
@@ -36,8 +39,11 @@
   body {
     min-height: 100vh;
     margin: 0;
-    font-family: 'Work Sans', sans-serif;
-    background: var(--app-surface);
+    font-family: var(--font-sans);
+    background:
+      radial-gradient(circle at top left, rgba(180, 106, 31, 0.08), transparent 24%),
+      radial-gradient(circle at top right, rgba(100, 22, 27, 0.11), transparent 28%),
+      linear-gradient(180deg, #f7f1ed 0%, #f2ebe7 100%);
     color: var(--app-text);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
@@ -693,19 +699,21 @@
   }
 
   .surface-card {
-    background: var(--app-surface-card);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.98), rgba(252,248,246,0.95));
     border: 1px solid var(--app-border);
     border-radius: 1.5rem;
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-glow);
     min-width: 0;
     overflow-wrap: anywhere;
     word-break: break-word;
   }
 
   .surface-panel {
-    background: var(--app-surface-soft);
+    background: linear-gradient(180deg, rgba(248,243,240,0.9), rgba(255,255,255,0.92));
     border: 1px solid var(--app-border);
     border-radius: 1.35rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
     min-width: 0;
     overflow-wrap: anywhere;
     word-break: break-word;
@@ -739,6 +747,7 @@
     max-width: 100%;
     white-space: normal;
     text-align: center;
+    box-shadow: 0 10px 24px rgba(31, 19, 16, 0.06);
   }
 
   .app-button:disabled,
@@ -760,16 +769,17 @@
   }
 
   .app-button-primary {
-    background: var(--brand);
+    background: linear-gradient(135deg, var(--brand) 0%, #8f2327 100%);
     border-color: var(--brand);
     color: #fff;
   }
 
   .app-button-primary:hover,
   .app-button-primary:focus-visible {
-    background: var(--brand-dark);
+    background: linear-gradient(135deg, var(--brand-dark) 0%, #6f171c 100%);
     border-color: var(--brand-dark);
     color: #fff;
+    transform: translateY(-1px);
   }
 
   .app-button-secondary {
@@ -782,6 +792,7 @@
   .app-button-secondary:focus-visible {
     background: var(--brand-soft);
     border-color: var(--brand);
+    transform: translateY(-1px);
   }
 
   .app-button-neutral {
@@ -794,6 +805,7 @@
   .app-button-neutral:focus-visible {
     background: #f4efee;
     border-color: var(--brand);
+    transform: translateY(-1px);
   }
 
   .app-button-danger {
@@ -950,8 +962,8 @@
 
   .hero-panel {
     background:
-      radial-gradient(circle at top right, rgba(162, 63, 0, 0.18), transparent 32%),
-      radial-gradient(circle at bottom left, rgba(114, 14, 16, 0.22), transparent 28%),
+      radial-gradient(circle at top right, rgba(180, 106, 31, 0.22), transparent 32%),
+      radial-gradient(circle at bottom left, rgba(100, 22, 27, 0.24), transparent 28%),
       var(--client-hero);
     border: 1px solid var(--app-border);
     border-radius: 1.75rem;
@@ -967,13 +979,14 @@
   }
 
   .metric-icon {
-    width: 3rem;
-    height: 3rem;
+    width: 3.2rem;
+    height: 3.2rem;
     border-radius: 1rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-size: 1.15rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
   .backoffice-frame {
@@ -1179,7 +1192,7 @@
     width: 4rem;
     height: 4rem;
     border-radius: 1.15rem;
-    background: linear-gradient(135deg, var(--brand-soft), #fff3ef);
+    background: linear-gradient(135deg, rgba(244, 217, 208, 0.92), rgba(255, 245, 239, 0.98));
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1217,7 +1230,7 @@
   .table-app thead th,
   .table-dark th {
     font-size: 0.78rem;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--app-text-muted);
     background: transparent;
@@ -1269,7 +1282,7 @@
     padding: 2rem;
     border: 1px dashed var(--app-border);
     border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.65);
+    background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(248,243,240,0.8));
     min-width: 0;
     overflow-wrap: anywhere;
     word-break: break-word;

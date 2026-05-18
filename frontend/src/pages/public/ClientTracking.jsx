@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Icon from '../../components/Icon';
 import StatusBadge from '../../components/StatusBadge';
@@ -34,7 +34,7 @@ export default function ClientTracking() {
     [order]
   );
 
-  const loadOrder = async (code) => {
+  const loadOrder = useCallback(async (code) => {
     const trimmed = String(code || '').trim().toUpperCase();
     if (!trimmed) {
       setOrder(null);
@@ -55,11 +55,11 @@ export default function ClientTracking() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchOrderByCode]);
 
   useEffect(() => {
     loadOrder(activeCode);
-  }, [activeCode]);
+  }, [activeCode, loadOrder]);
 
   useEffect(() => {
     if (!order || ['entregado', 'cancelado'].includes(order.estado)) {
@@ -71,7 +71,7 @@ export default function ClientTracking() {
     }, 15000);
 
     return () => window.clearInterval(timer);
-  }, [activeCode, order]);
+  }, [activeCode, loadOrder, order]);
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fcf9f8_0%,#f5efed_100%)] py-4">

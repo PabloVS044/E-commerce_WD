@@ -1,6 +1,8 @@
 # Entorno
 .env
 .env.local
+frontend/.env
+backend/.env
 
 # Dependencias y builds
 node_modules/

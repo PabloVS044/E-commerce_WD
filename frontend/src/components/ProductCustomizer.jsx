@@ -94,7 +94,7 @@ export default function ProductCustomizer({
   const setExtraQuantity = (extraId, nextQuantity) => {
     setExtraCounts((current) => {
       if (nextQuantity <= 0) {
-        const { [extraId]: removed, ...rest } = current;
+        const { [extraId]: _removed, ...rest } = current;
         return rest;
       }
 
