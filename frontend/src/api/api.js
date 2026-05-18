@@ -1,5 +1,26 @@
-const rawBase = import.meta.env.VITE_API_BASE_URL || '/api';
-const BASE = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
+function isAbsoluteHttpUrl(value) {
+  return /^https?:\/\//i.test(String(value || '').trim());
+}
+
+export function normalizeApiBase(rawBase) {
+  const trimmed = String(rawBase || '/api').trim().replace(/\/+$/, '');
+
+  if (!trimmed) {
+    return '/api';
+  }
+
+  if (trimmed === '/api') {
+    return trimmed;
+  }
+
+  if (isAbsoluteHttpUrl(trimmed)) {
+    return /\/api$/i.test(trimmed) ? trimmed : `${trimmed}/api`;
+  }
+
+  return trimmed;
+}
+
+const BASE = normalizeApiBase(import.meta.env.VITE_API_BASE_URL || '/api');
 
 async function request(method, path, body = null) {
   const options = { method, credentials: 'include' };
