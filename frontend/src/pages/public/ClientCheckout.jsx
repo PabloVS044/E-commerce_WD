@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Icon from '../../components/Icon';
 import LoadingScreen from '../../components/LoadingScreen';
 import { useCustomerUi } from '../../context/CustomerUiContext';
-import { getProductGlyph } from '../../utils/catalog';
+import ProductImage from '../../components/ProductImage';
 import { formatMoney, summarizeCartLine } from '../../utils/orders';
 
 const EMPTY_FORM = {
@@ -121,9 +121,11 @@ export default function ClientCheckout() {
                       <div key={item.key} className="surface-panel p-3 sm:p-4">
                         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                           <div className="flex min-w-0 gap-3">
-                            <div className="product-icon shrink-0 text-[var(--brand)]">
-                              <Icon name={getProductGlyph(item)} className="h-8 w-8" />
-                            </div>
+                            <ProductImage
+                              product={item}
+                              className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl"
+                              iconClassName="h-8 w-8"
+                            />
                             <div className="min-w-0">
                               <div className="font-semibold text-[var(--app-text)]">{item.nombre}</div>
                               <div className="mt-1 text-sm text-[var(--app-text-muted)]">

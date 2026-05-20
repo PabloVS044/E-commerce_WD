@@ -125,6 +125,7 @@ export function CustomerUiProvider({ children }) {
           descripcion: product.descripcion,
           categoria: product.categoria,
           precio: Number(product.precio || 0),
+          imagen_url: product.imagen_url,
           cantidad,
           unit_total: unitTotal,
           subtotal: unitTotal * cantidad,

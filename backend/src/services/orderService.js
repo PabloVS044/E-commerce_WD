@@ -214,6 +214,7 @@ function serializeProducts(products, recipesByProduct, combosByProduct, extras, 
       categoria: product.categoria,
       es_combo: product.es_combo,
       disponible: product.disponible,
+      imagen_url: product.imagen_url,
       componentes: components,
       ingredientes_base: ingredients,
       ingredientes_removibles: removableIngredients,
@@ -238,6 +239,7 @@ async function loadCatalog(client, { onlyAvailable = false } = {}) {
     es_combo: row.es_combo,
     disponible: row.disponible,
     categoria: row.categoria,
+    imagen_url: row.imagen_url,
   }));
 
   const productById = new Map(products.map((product) => [product.id_producto, product]));

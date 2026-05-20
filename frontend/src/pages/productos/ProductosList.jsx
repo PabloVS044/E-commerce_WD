@@ -4,50 +4,8 @@ import AppShell from '../../components/AppShell';
 import EmptyState from '../../components/EmptyState';
 import LoadingScreen from '../../components/LoadingScreen';
 import MetricCard from '../../components/MetricCard';
+import ProductImage from '../../components/ProductImage';
 import { api } from '../../api/api';
-
-function ProductThumbnail({ src, alt }) {
-  const [error, setError] = useState(false);
-
-  if (!src || error) {
-    return (
-      <div
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: '0.6rem',
-          background: 'var(--app-surface-muted)',
-          border: '1px solid var(--app-border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '1.3rem',
-          flexShrink: 0,
-        }}
-        title="Sin imagen"
-      >
-        🌮
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={src}
-      alt={alt}
-      onError={() => setError(true)}
-      style={{
-        width: 44,
-        height: 44,
-        borderRadius: '0.6rem',
-        objectFit: 'cover',
-        border: '1px solid var(--app-border)',
-        flexShrink: 0,
-      }}
-    />
-  );
-}
-
 export default function ProductosList() {
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState('');
@@ -144,7 +102,11 @@ export default function ProductosList() {
                 {filteredProducts.map((p) => (
                   <tr key={p.id_producto}>
                     <td>
-                      <ProductThumbnail src={p.imagen_url} alt={p.nombre} />
+                      <ProductImage
+                        product={p}
+                        className="h-[44px] w-[44px] shrink-0 rounded-[0.6rem] border border-[var(--app-border)]"
+                        iconClassName="h-5 w-5"
+                      />
                     </td>
                     <td>{p.categoria}</td>
                     <td className="fw-semibold">{p.nombre}</td>

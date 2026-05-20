@@ -5,7 +5,7 @@ import Icon from '../../components/Icon';
 import LoadingScreen from '../../components/LoadingScreen';
 import ProductCustomizer from '../../components/ProductCustomizer';
 import { api } from '../../api/api';
-import { getProductGlyph } from '../../utils/catalog';
+import ProductImage from '../../components/ProductImage';
 import {
   buildLineKey,
   formatMoney,
@@ -98,6 +98,7 @@ function buildTicketItems(ticket, productById) {
         descripcion: product.descripcion,
         categoria: product.categoria,
         precio: Number(product.precio || 0),
+        imagen_url: product.imagen_url,
         cantidad: quantity,
         unit_total: unitTotal,
         subtotal: unitTotal * quantity,
@@ -475,9 +476,11 @@ export default function PosTerminal() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="mb-2 flex items-center gap-2">
-                          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--app-surface-soft)] text-2xl text-[var(--brand)]">
-                            <Icon name={getProductGlyph(product)} className="h-6 w-6" />
-                          </span>
+                          <ProductImage
+                            product={product}
+                            className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+                            iconClassName="h-6 w-6"
+                          />
                           <span className="rounded-full border border-[var(--app-border)] bg-[var(--app-surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--app-text-muted)]">
                             {product.categoria}
                           </span>

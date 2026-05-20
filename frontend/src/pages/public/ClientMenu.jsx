@@ -4,7 +4,7 @@ import Icon from '../../components/Icon';
 import LoadingScreen from '../../components/LoadingScreen';
 import ProductCustomizer from '../../components/ProductCustomizer';
 import { useCustomerUi } from '../../context/CustomerUiContext';
-import { getProductGlyph } from '../../utils/catalog';
+import ProductImage from '../../components/ProductImage';
 import { formatMoney, summarizeCartLine } from '../../utils/orders';
 
 function ProductCard({ product, onSelect }) {
@@ -16,69 +16,73 @@ function ProductCard({ product, onSelect }) {
     <button
       type="button"
       className={[
-        'group flex min-h-[14.25rem] flex-col justify-between rounded-[1.5rem] border p-4 text-left shadow-[var(--shadow-soft)] transition',
+        'group flex min-h-[22rem] flex-col overflow-hidden rounded-[1.5rem] border text-left shadow-[var(--shadow-soft)] transition',
         product.can_order
-          ? 'border-[var(--app-border)] bg-white hover:-translate-y-0.5 hover:border-[var(--brand)] active:scale-[0.99]'
+          ? 'border-[var(--app-border)] bg-white hover:-translate-y-1 hover:shadow-xl hover:border-[var(--brand)] active:scale-[0.98]'
           : 'cursor-not-allowed border-red-200 bg-red-50/80 opacity-80',
       ].join(' ')}
       onClick={() => product.can_order && onSelect(product)}
       disabled={!product.can_order}
     >
-      <div>
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <span className="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-[var(--app-surface-soft)] text-3xl text-[var(--brand)]">
-            <Icon name={getProductGlyph(product)} className="h-8 w-8" />
+      <div className="relative w-full h-48 shrink-0 bg-[var(--app-surface-soft)]">
+        <ProductImage
+          product={product}
+          className="absolute inset-0 h-full w-full"
+          iconClassName="h-12 w-12 opacity-40 text-[var(--brand)]"
+        />
+        <div className="absolute top-3 right-3 flex flex-wrap justify-end gap-2">
+          <span className="rounded-full border border-white/20 bg-black/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-white backdrop-blur-md">
+            {product.categoria}
           </span>
-          <div className="flex flex-wrap justify-end gap-2">
-            <span className="rounded-full border border-[var(--app-border)] bg-[var(--app-surface-soft)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--app-text-muted)]">
-              {product.categoria}
+          {product.es_combo && (
+            <span className="rounded-full border border-[#B5C4FF]/50 bg-[#10288C]/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-white backdrop-blur-md">
+              Combo
             </span>
-            {product.es_combo && (
-              <span className="rounded-full border border-[#B5C4FF] bg-[#E3E9FF] px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[#10288C]">
-                Combo
-              </span>
-            )}
-          </div>
+          )}
         </div>
-
-        <div className="text-[1.15rem] font-bold leading-[1.12] text-[var(--app-text)]">
-          {product.nombre}
-        </div>
-        <p className="mt-2 text-sm leading-6 text-[var(--app-text-muted)]">
-          {product.descripcion || 'Disponible para pedir desde la terminal de cliente.'}
-        </p>
-
-        {product.componentes?.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {product.componentes.slice(0, 3).map((component) => (
-              <span key={`${product.id_producto}-${component.id_producto}`} className="rounded-full bg-[var(--app-surface-soft)] px-3 py-1 text-xs font-semibold text-[var(--app-text-muted)]">
-                {component.cantidad} x {component.nombre}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
-      <div className="mt-4 flex items-end justify-between gap-3">
+      <div className="flex flex-1 flex-col justify-between p-4">
         <div>
-          <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--app-text-muted)]">
-            Precio
+          <div className="text-[1.25rem] font-bold leading-[1.15] text-[var(--app-text)]">
+            {product.nombre}
           </div>
-          <div className="mt-1 text-[1.65rem] font-extrabold leading-none text-[var(--brand)]">
-            {formatMoney(product.precio)}
-          </div>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--app-text-muted)] line-clamp-2">
+            {product.descripcion || 'Disponible para pedir desde la terminal de cliente.'}
+          </p>
+
+          {product.componentes?.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {product.componentes.slice(0, 3).map((component) => (
+                <span key={`${product.id_producto}-${component.id_producto}`} className="rounded-full bg-[var(--app-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--app-text-muted)]">
+                  {component.cantidad} x {component.nombre}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
-        {product.can_order ? (
-          <span className="inline-flex min-h-[3rem] items-center gap-2 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] px-4 text-sm font-bold text-[var(--brand)] transition group-hover:border-[var(--brand)] group-hover:bg-[var(--brand)] group-hover:text-white">
-            <Icon name="sliders" className="h-4 w-4" />
-            Elegir
-          </span>
-        ) : (
-          <span className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
-            {shortageText}
-          </span>
-        )}
+        <div className="mt-4 flex items-end justify-between gap-3">
+          <div>
+            <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--app-text-muted)]">
+              Precio
+            </div>
+            <div className="mt-1 text-[1.65rem] font-extrabold leading-none text-[var(--brand)]">
+              {formatMoney(product.precio)}
+            </div>
+          </div>
+
+          {product.can_order ? (
+            <span className="inline-flex min-h-[3rem] items-center gap-2 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] px-4 text-sm font-bold text-[var(--brand)] transition group-hover:border-[var(--brand)] group-hover:bg-[var(--brand)] group-hover:text-white">
+              <Icon name="sliders" className="h-4 w-4" />
+              Elegir
+            </span>
+          ) : (
+            <span className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+              {shortageText}
+            </span>
+          )}
+        </div>
       </div>
     </button>
   );

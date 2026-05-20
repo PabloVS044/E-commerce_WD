@@ -7,6 +7,7 @@ function listCatalogProducts(onlyAvailable) {
       p.precio,
       p.es_combo,
       p.disponible,
+      p.imagen_url,
       cat.nombre AS categoria
     FROM producto p
     JOIN categoria_producto cat ON cat.id_categoria_producto = p.id_categoria_producto

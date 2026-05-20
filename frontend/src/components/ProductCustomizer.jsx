@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import Icon from './Icon';
-import { getProductGlyph } from '../utils/catalog';
+import ProductImage from './ProductImage';
 import { formatMoney } from '../utils/orders';
 
 function QuantityButton({ children, onClick, disabled = false }) {
@@ -145,9 +145,11 @@ export default function ProductCustomizer({
           <div className="surface-card p-4">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <span className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--app-surface-soft)] text-4xl text-[var(--brand)]">
-                  <Icon name={getProductGlyph(product)} className="h-9 w-9" />
-                </span>
+                <ProductImage
+                  product={product}
+                  className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl"
+                  iconClassName="h-9 w-9"
+                />
                 <div>
                   <div className="text-[0.74rem] font-semibold uppercase tracking-[0.12em] text-[var(--app-text-muted)]">
                     {product.categoria}
