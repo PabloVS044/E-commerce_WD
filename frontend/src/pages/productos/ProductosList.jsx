@@ -6,6 +6,48 @@ import LoadingScreen from '../../components/LoadingScreen';
 import MetricCard from '../../components/MetricCard';
 import { api } from '../../api/api';
 
+function ProductThumbnail({ src, alt }) {
+  const [error, setError] = useState(false);
+
+  if (!src || error) {
+    return (
+      <div
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: '0.6rem',
+          background: 'var(--app-surface-muted)',
+          border: '1px solid var(--app-border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '1.3rem',
+          flexShrink: 0,
+        }}
+        title="Sin imagen"
+      >
+        🌮
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setError(true)}
+      style={{
+        width: 44,
+        height: 44,
+        borderRadius: '0.6rem',
+        objectFit: 'cover',
+        border: '1px solid var(--app-border)',
+        flexShrink: 0,
+      }}
+    />
+  );
+}
+
 export default function ProductosList() {
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState('');
@@ -14,50 +56,41 @@ export default function ProductosList() {
 
   useEffect(() => {
     api.get('/productos')
-      .then(d => setProductos(d.productos))
-      .catch(e => setError(e.message))
+      .then((d) => setProductos(d.productos))
+      .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
 
   const filteredProducts = useMemo(() => {
     const normalized = search.trim().toLowerCase();
-    if (!normalized) {
-      return productos;
-    }
-
-    return productos.filter((producto) => (
-      producto.nombre.toLowerCase().includes(normalized)
-      || producto.categoria.toLowerCase().includes(normalized)
-      || producto.descripcion?.toLowerCase().includes(normalized)
-    ));
+    if (!normalized) return productos;
+    return productos.filter((p) =>
+      p.nombre.toLowerCase().includes(normalized)
+      || p.categoria.toLowerCase().includes(normalized)
+      || p.descripcion?.toLowerCase().includes(normalized)
+    );
   }, [productos, search]);
 
-  const availableCount = productos.filter((producto) => producto.disponible).length;
-  const comboCount = productos.filter((producto) => producto.es_combo).length;
+  const availableCount = productos.filter((p) => p.disponible).length;
+  const comboCount = productos.filter((p) => p.es_combo).length;
 
   const handleDelete = async (id, nombre) => {
     if (!confirm(`¿Eliminar "${nombre}"?`)) return;
     try {
       await api.delete(`/productos/${id}`);
-      setProductos(prev => prev.filter(p => p.id_producto !== id));
+      setProductos((prev) => prev.filter((p) => p.id_producto !== id));
     } catch (e) {
       alert(e.message);
     }
   };
 
-  if (loading) {
-    return <LoadingScreen label="Cargando productos..." />;
-  }
+  if (loading) return <LoadingScreen label="Cargando productos..." />;
 
   return (
     <AppShell
       title="Productos"
       subtitle="Catálogo administrativo conectado al backend real."
-      actions={(
-        <Link to="/productos/nuevo" className="btn btn-brand">
-          Nuevo producto
-        </Link>
-      )}
+      actions={<Link to="/productos/nuevo" className="btn btn-brand">Nuevo producto</Link>}
     >
       {error && <div className="alert alert-danger">{error}</div>}
 
@@ -80,7 +113,7 @@ export default function ProductosList() {
             <input
               className="form-control"
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Taco, bebida, combo..."
             />
           </div>
@@ -97,18 +130,22 @@ export default function ProductosList() {
             <table className="table table-app align-middle mb-0">
               <thead>
                 <tr>
+                  <th style={{ width: 56 }}>Foto</th>
                   <th>Categoría</th>
                   <th>Nombre</th>
                   <th>Descripción</th>
                   <th>Precio</th>
                   <th>Disponible</th>
                   <th>Combo</th>
-                  <th></th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.map((p) => (
                   <tr key={p.id_producto}>
+                    <td>
+                      <ProductThumbnail src={p.imagen_url} alt={p.nombre} />
+                    </td>
                     <td>{p.categoria}</td>
                     <td className="fw-semibold">{p.nombre}</td>
                     <td className="text-muted small">{p.descripcion || '—'}</td>
@@ -125,8 +162,15 @@ export default function ProductosList() {
                     </td>
                     <td>
                       <div className="d-flex gap-2 justify-content-end">
-                        <Link to={`/productos/${p.id_producto}/editar`} className="btn btn-sm btn-outline-secondary">Editar</Link>
-                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(p.id_producto, p.nombre)}>Eliminar</button>
+                        <Link to={`/productos/${p.id_producto}/editar`} className="btn btn-sm btn-outline-secondary">
+                          Editar
+                        </Link>
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => handleDelete(p.id_producto, p.nombre)}
+                        >
+                          Eliminar
+                        </button>
                       </div>
                     </td>
                   </tr>

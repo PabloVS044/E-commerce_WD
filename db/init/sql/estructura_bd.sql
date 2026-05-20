@@ -110,6 +110,8 @@ descripcion TEXT,
 precio NUMERIC(10,2) NOT NULL CHECK (precio >= 0),
 es_combo BOOLEAN NOT NULL DEFAULT FALSE,
 disponible BOOLEAN NOT NULL DEFAULT TRUE,
+imagen_url VARCHAR(500),
+imagen_public_id VARCHAR(255),
 creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

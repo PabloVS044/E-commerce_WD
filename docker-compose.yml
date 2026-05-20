@@ -37,6 +37,10 @@ services:
       PORT: 3000
       SESSION_SECRET: ${SESSION_SECRET:-G9qW3Lx8Ns2Vb7Km4Pd1Yt6Hr0Cf5Ju9Re3Xa8Mz2Uk7Wp4Dn1Tv6Bh0Qs5Lc8Ef}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      CLOUDINARY_PRODUCT_FOLDER: ${CLOUDINARY_PRODUCT_FOLDER:-tacos-el-pepe/productos}
     depends_on:
       db:
         condition: service_healthy

@@ -18,6 +18,8 @@ module.exports = {
       p.precio,
       p.disponible,
       p.es_combo,
+      p.imagen_url,
+      p.imagen_public_id,
       cat.nombre AS categoria
     FROM producto p
     JOIN categoria_producto cat ON cat.id_categoria_producto = p.id_categoria_producto
@@ -32,6 +34,8 @@ module.exports = {
       p.precio,
       p.disponible,
       p.es_combo,
+      p.imagen_url,
+      p.imagen_public_id,
       cat.nombre AS categoria
     FROM producto p
     JOIN categoria_producto cat ON cat.id_categoria_producto = p.id_categoria_producto
@@ -75,7 +79,9 @@ module.exports = {
       descripcion,
       precio,
       disponible,
-      es_combo
+      es_combo,
+      imagen_url,
+      imagen_public_id
   `,
   updateProduct: `
     UPDATE producto
@@ -93,7 +99,23 @@ module.exports = {
       descripcion,
       precio,
       disponible,
-      es_combo
+      es_combo,
+      imagen_url,
+      imagen_public_id
+  `,
+  updateProductImage: `
+    UPDATE producto
+    SET imagen_url = $1,
+        imagen_public_id = $2
+    WHERE id_producto = $3
+    RETURNING id_producto, imagen_url, imagen_public_id
+  `,
+  clearProductImage: `
+    UPDATE producto
+    SET imagen_url = NULL,
+        imagen_public_id = NULL
+    WHERE id_producto = $1
+    RETURNING id_producto, imagen_url, imagen_public_id
   `,
   deleteProductRecipe: `
     DELETE FROM receta

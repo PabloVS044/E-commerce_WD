@@ -12,6 +12,9 @@ router.get('/', asyncHandler(productController.listProducts));
 router.get('/:id', asyncHandler(productController.getProduct));
 router.post('/', asyncHandler(productController.createProduct));
 router.put('/:id', asyncHandler(productController.updateProduct));
+// IMPORTANTE: esta ruta debe ir ANTES de DELETE /:id para que Express
+// no interprete "imagen" como un id de producto.
+router.delete('/:id/imagen', asyncHandler(productController.deleteProductImage));
 router.delete('/:id', asyncHandler(productController.deleteProduct));
 
 module.exports = router;

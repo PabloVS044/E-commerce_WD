@@ -46,6 +46,16 @@ async function updateProduct(idProducto, payload, executor = pool) {
   return result.rows[0] || null;
 }
 
+async function updateProductImage(idProducto, imagenUrl, imagenPublicId, executor = pool) {
+  const result = await executor.query(queries.updateProductImage, [imagenUrl, imagenPublicId, idProducto]);
+  return result.rows[0] || null;
+}
+
+async function clearProductImage(idProducto, executor = pool) {
+  const result = await executor.query(queries.clearProductImage, [idProducto]);
+  return result.rows[0] || null;
+}
+
 async function clearProductRecipe(idProducto, executor = pool) {
   await executor.query(queries.deleteProductRecipe, [idProducto]);
 }
@@ -77,6 +87,8 @@ module.exports = {
   listAllComboItems,
   createProduct,
   updateProduct,
+  updateProductImage,
+  clearProductImage,
   clearProductRecipe,
   addRecipeItem,
   clearProductComboItems,

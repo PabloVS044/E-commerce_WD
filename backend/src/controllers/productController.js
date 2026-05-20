@@ -25,6 +25,11 @@ async function updateProduct(req, res) {
   res.json({ producto });
 }
 
+async function deleteProductImage(req, res) {
+  await productService.deleteProductImage(req.params.id);
+  res.json({ message: 'Imagen eliminada.' });
+}
+
 async function deleteProduct(req, res) {
   await productService.deleteProduct(req.params.id);
   res.json({ message: 'Producto eliminado.' });
@@ -36,5 +41,6 @@ module.exports = {
   getProduct,
   createProduct,
   updateProduct,
+  deleteProductImage,
   deleteProduct,
 };

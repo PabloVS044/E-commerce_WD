@@ -1,8 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import AppShell from '../../components/AppShell';
 import LoadingScreen from '../../components/LoadingScreen';
 import { api } from '../../api/api';
+
+const MAX_SIZE_MB = 4;
+const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+const ACCEPTED_MIME = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 
 function createLineId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -63,13 +67,16 @@ function sanitizeComponents(components) {
     }));
 }
 
-function DefinitionRow({
-  title,
-  description,
-  actionLabel,
-  onAdd,
-  children,
-}) {
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function DefinitionRow({ title, description, actionLabel, onAdd, children }) {
   return (
     <div className="surface-card p-3 p-lg-4">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
@@ -86,6 +93,140 @@ function DefinitionRow({
   );
 }
 
+// ─── Sección de imagen ────────────────────────────────────────────────────────
+function ImagenProducto({ currentUrl, onImageChange, onImageRemove, imageError, setImageError }) {
+  const fileInputRef = useRef(null);
+  const [preview, setPreview] = useState(currentUrl || null);
+  const [pendingDataUrl, setPendingDataUrl] = useState(null); // nueva imagen seleccionada
+  const [markedForRemoval, setMarkedForRemoval] = useState(false);
+
+  // Sync preview cuando cambia el producto en edición
+  useEffect(() => {
+    if (!pendingDataUrl && !markedForRemoval) {
+      setPreview(currentUrl || null);
+    }
+  }, [currentUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageError('');
+
+    if (!ACCEPTED_MIME.includes(file.type)) {
+      setImageError('Solo se aceptan imágenes PNG, JPG, WEBP o GIF.');
+      e.target.value = '';
+      return;
+    }
+
+    if (file.size > MAX_SIZE_BYTES) {
+      setImageError(`La imagen supera el máximo de ${MAX_SIZE_MB} MB.`);
+      e.target.value = '';
+      return;
+    }
+
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      setPreview(dataUrl);
+      setPendingDataUrl(dataUrl);
+      setMarkedForRemoval(false);
+      onImageChange(dataUrl);
+    } catch {
+      setImageError('No se pudo leer la imagen seleccionada.');
+    }
+
+    e.target.value = '';
+  };
+
+  const handleRemove = () => {
+    setPreview(null);
+    setPendingDataUrl(null);
+    setMarkedForRemoval(true);
+    setImageError('');
+    onImageRemove();
+  };
+
+  const hasImage = Boolean(preview);
+
+  return (
+    <div className="surface-card p-3 p-lg-4">
+      <h2 className="h5 mb-1">Imagen del producto</h2>
+      <p className="mb-3 text-sm text-[var(--app-text-muted)]">
+        Foto visible en el catálogo. PNG, JPG, WEBP o GIF · máx. {MAX_SIZE_MB} MB.
+      </p>
+
+      {imageError && (
+        <div className="alert alert-danger py-2 mb-3 text-sm">{imageError}</div>
+      )}
+
+      <div className="d-flex flex-wrap align-items-start gap-4">
+        {/* Preview */}
+        <div
+          style={{
+            width: 140,
+            height: 140,
+            borderRadius: '1rem',
+            overflow: 'hidden',
+            border: '2px dashed var(--app-border)',
+            background: 'var(--app-surface-muted)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          {hasImage ? (
+            <img
+              src={preview}
+              alt="Preview"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <span style={{ fontSize: '2.5rem', opacity: 0.3 }}>🌮</span>
+          )}
+        </div>
+
+        {/* Acciones */}
+        <div className="d-flex flex-column gap-2 justify-content-center" style={{ minHeight: 140 }}>
+          <button
+            type="button"
+            className="btn btn-outline-secondary btn-sm"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {hasImage ? 'Cambiar imagen' : 'Seleccionar imagen'}
+          </button>
+
+          {hasImage && (
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm"
+              onClick={handleRemove}
+            >
+              Quitar imagen
+            </button>
+          )}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={ACCEPTED_MIME.join(',')}
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+            id="producto-imagen-input"
+          />
+        </div>
+      </div>
+
+      {markedForRemoval && currentUrl && (
+        <p className="mt-2 text-sm text-[var(--app-text-muted)]">
+          ⚠️ La imagen actual se eliminará al guardar.
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─── Componente principal ─────────────────────────────────────────────────────
 export default function ProductoForm() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -97,8 +238,13 @@ export default function ProductoForm() {
   const [insumos, setInsumos] = useState([]);
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState('');
+  const [imageError, setImageError] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // imagen: undefined = sin cambio | null = borrar | string = nueva data URL
+  const [imagenPayload, setImagenPayload] = useState(undefined);
+  const [currentImageUrl, setCurrentImageUrl] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -109,158 +255,117 @@ export default function ProductoForm() {
       api.get('/productos'),
       isEdit ? api.get(`/productos/${id}`) : Promise.resolve(null),
     ])
-      .then(([categoriasResponse, insumosResponse, productosResponse, productoResponse]) => {
-        if (!active) {
-          return;
-        }
+      .then(([categoriasRes, insumosRes, productosRes, productoRes]) => {
+        if (!active) return;
 
-        setCategorias(categoriasResponse.categorias);
-        setInsumos(insumosResponse.insumos);
-        setProductos(productosResponse.productos);
+        setCategorias(categoriasRes.categorias);
+        setInsumos(insumosRes.insumos);
+        setProductos(productosRes.productos);
 
-        if (productoResponse?.producto) {
-          const product = productoResponse.producto;
+        if (productoRes?.producto) {
+          const p = productoRes.producto;
           setForm({
-            id_categoria_producto: String(product.id_categoria_producto),
-            nombre: product.nombre,
-            descripcion: product.descripcion || '',
-            precio: String(product.precio),
-            disponible: Boolean(product.disponible),
-            receta: product.receta?.length
-              ? product.receta.map((line) => createRecipeLine(line))
+            id_categoria_producto: String(p.id_categoria_producto),
+            nombre: p.nombre,
+            descripcion: p.descripcion || '',
+            precio: String(p.precio),
+            disponible: Boolean(p.disponible),
+            receta: p.receta?.length
+              ? p.receta.map((line) => createRecipeLine(line))
               : [createRecipeLine()],
-            componentes_combo: product.componentes_combo?.length
-              ? product.componentes_combo.map((line) => createComboLine(line))
+            componentes_combo: p.componentes_combo?.length
+              ? p.componentes_combo.map((line) => createComboLine(line))
               : [createComboLine()],
           });
+          setCurrentImageUrl(p.imagen_url || null);
         }
       })
-      .catch((requestError) => setError(requestError.message))
-      .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
-      });
+      .catch((e) => setError(e.message))
+      .finally(() => { if (active) setLoading(false); });
 
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [id, isEdit]);
 
   const categoriasById = useMemo(
-    () => new Map(categorias.map((categoria) => [String(categoria.id_categoria_producto), categoria])),
+    () => new Map(categorias.map((c) => [String(c.id_categoria_producto), c])),
     [categorias]
   );
 
   const insumosById = useMemo(
-    () => new Map(insumos.map((insumo) => [String(insumo.id_insumo), insumo])),
+    () => new Map(insumos.map((i) => [String(i.id_insumo), i])),
     [insumos]
   );
 
   const selectedCategory = categoriasById.get(form.id_categoria_producto);
   const comboCategoryId = useMemo(
-    () => categorias.find((categoria) => isComboCategory(categoria.nombre))?.id_categoria_producto,
+    () => categorias.find((c) => isComboCategory(c.nombre))?.id_categoria_producto,
     [categorias]
   );
   const isComboProduct = isComboCategory(selectedCategory?.nombre);
 
   const availableComponentProducts = useMemo(
-    () => productos.filter((product) => product.id_producto !== currentProductId),
+    () => productos.filter((p) => p.id_producto !== currentProductId),
     [productos, currentProductId]
   );
 
-  const handleBasicChange = (event) => {
-    const { name, value, type, checked } = event.target;
-    setForm((current) => ({
-      ...current,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+  const handleBasicChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((cur) => ({ ...cur, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleCategoryChange = (event) => {
-    const nextCategoryId = event.target.value;
-    const nextCategory = categoriasById.get(nextCategoryId);
-    const nextIsCombo = isComboCategory(nextCategory?.nombre);
-
-    setForm((current) => ({
-      ...current,
-      id_categoria_producto: nextCategoryId,
-      receta: !nextIsCombo && current.receta.length === 0 ? [createRecipeLine()] : current.receta,
-      componentes_combo: nextIsCombo && current.componentes_combo.length === 0
+  const handleCategoryChange = (e) => {
+    const nextId = e.target.value;
+    const nextCat = categoriasById.get(nextId);
+    const nextIsCombo = isComboCategory(nextCat?.nombre);
+    setForm((cur) => ({
+      ...cur,
+      id_categoria_producto: nextId,
+      receta: !nextIsCombo && cur.receta.length === 0 ? [createRecipeLine()] : cur.receta,
+      componentes_combo: nextIsCombo && cur.componentes_combo.length === 0
         ? [createComboLine()]
-        : current.componentes_combo,
+        : cur.componentes_combo,
     }));
   };
 
-  const setRecipeLine = (lineId, field, value) => {
-    setForm((current) => ({
-      ...current,
-      receta: current.receta.map((line) => (
-        line.lineId === lineId ? { ...line, [field]: value } : line
-      )),
-    }));
-  };
+  const setRecipeLine = (lineId, field, value) =>
+    setForm((cur) => ({ ...cur, receta: cur.receta.map((l) => l.lineId === lineId ? { ...l, [field]: value } : l) }));
 
-  const setComboLine = (lineId, field, value) => {
-    setForm((current) => ({
-      ...current,
-      componentes_combo: current.componentes_combo.map((line) => (
-        line.lineId === lineId ? { ...line, [field]: value } : line
-      )),
-    }));
-  };
+  const setComboLine = (lineId, field, value) =>
+    setForm((cur) => ({ ...cur, componentes_combo: cur.componentes_combo.map((l) => l.lineId === lineId ? { ...l, [field]: value } : l) }));
 
-  const addRecipeLine = () => {
-    setForm((current) => ({
-      ...current,
-      receta: [...current.receta, createRecipeLine()],
-    }));
-  };
+  const addRecipeLine = () => setForm((cur) => ({ ...cur, receta: [...cur.receta, createRecipeLine()] }));
+  const addComboLine = () => setForm((cur) => ({ ...cur, componentes_combo: [...cur.componentes_combo, createComboLine()] }));
 
-  const addComboLine = () => {
-    setForm((current) => ({
-      ...current,
-      componentes_combo: [...current.componentes_combo, createComboLine()],
-    }));
-  };
-
-  const removeRecipeLine = (lineId) => {
-    setForm((current) => {
-      const next = current.receta.filter((line) => line.lineId !== lineId);
-      return {
-        ...current,
-        receta: next.length ? next : [createRecipeLine()],
-      };
+  const removeRecipeLine = (lineId) =>
+    setForm((cur) => {
+      const next = cur.receta.filter((l) => l.lineId !== lineId);
+      return { ...cur, receta: next.length ? next : [createRecipeLine()] };
     });
-  };
 
-  const removeComboLine = (lineId) => {
-    setForm((current) => {
-      const next = current.componentes_combo.filter((line) => line.lineId !== lineId);
-      return {
-        ...current,
-        componentes_combo: next.length ? next : [createComboLine()],
-      };
+  const removeComboLine = (lineId) =>
+    setForm((cur) => {
+      const next = cur.componentes_combo.filter((l) => l.lineId !== lineId);
+      return { ...cur, componentes_combo: next.length ? next : [createComboLine()] };
     });
-  };
 
   const handleMarkAsCombo = () => {
     if (!comboCategoryId) {
       setError('No existe una categoría de Combos configurada en la base de datos.');
       return;
     }
-
     setError('');
-    setForm((current) => ({
-      ...current,
+    setForm((cur) => ({
+      ...cur,
       id_categoria_producto: String(comboCategoryId),
-      componentes_combo: current.componentes_combo.length ? current.componentes_combo : [createComboLine()],
+      componentes_combo: cur.componentes_combo.length ? cur.componentes_combo : [createComboLine()],
     }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError('');
+
+    if (imageError) return; // imagen inválida pendiente
 
     const receta = sanitizeRecipe(form.receta);
     const componentesCombo = sanitizeComponents(form.componentes_combo);
@@ -292,6 +397,8 @@ export default function ProductoForm() {
         es_combo: isComboProduct,
         receta: isComboProduct ? [] : receta,
         componentes_combo: isComboProduct ? componentesCombo : [],
+        // Solo incluir "imagen" si hay un cambio real
+        ...(imagenPayload !== undefined ? { imagen: imagenPayload } : {}),
       };
 
       if (isEdit) {
@@ -316,16 +423,13 @@ export default function ProductoForm() {
     <AppShell
       title={isEdit ? 'Editar producto' : 'Nuevo producto'}
       subtitle="Registra el catálogo completo con receta para inventario o con composición de combo."
-      actions={(
-        <Link to="/productos" className="btn btn-outline-secondary">
-          Volver
-        </Link>
-      )}
+      actions={<Link to="/productos" className="btn btn-outline-secondary">Volver</Link>}
     >
       <div className="mx-auto max-w-6xl">
         {error && <div className="alert alert-danger mb-4">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* ── Datos básicos ── */}
           <div className="surface-card p-3 p-lg-4">
             <div className="row g-3">
               <div className="col-12 col-lg-4">
@@ -338,9 +442,9 @@ export default function ProductoForm() {
                   required
                 >
                   <option value="">Selecciona una categoría</option>
-                  {categorias.map((categoria) => (
-                    <option key={categoria.id_categoria_producto} value={categoria.id_categoria_producto}>
-                      {categoria.nombre}
+                  {categorias.map((c) => (
+                    <option key={c.id_categoria_producto} value={c.id_categoria_producto}>
+                      {c.nombre}
                     </option>
                   ))}
                 </select>
@@ -424,6 +528,16 @@ export default function ProductoForm() {
             </div>
           </div>
 
+          {/* ── Imagen ── */}
+          <ImagenProducto
+            currentUrl={currentImageUrl}
+            imageError={imageError}
+            setImageError={setImageError}
+            onImageChange={(dataUrl) => setImagenPayload(dataUrl)}
+            onImageRemove={() => setImagenPayload(null)}
+          />
+
+          {/* ── Receta / Combo ── */}
           {isComboProduct ? (
             <DefinitionRow
               title="Componentes del combo"
@@ -433,9 +547,8 @@ export default function ProductoForm() {
             >
               {form.componentes_combo.map((line, index) => {
                 const selectedProduct = availableComponentProducts.find(
-                  (product) => String(product.id_producto) === line.id_producto
+                  (p) => String(p.id_producto) === line.id_producto
                 );
-
                 return (
                   <div key={line.lineId} className="rounded-[1.15rem] border border-[var(--app-border)] p-3">
                     <div className="row g-3 align-items-end">
@@ -444,12 +557,12 @@ export default function ProductoForm() {
                         <select
                           className="form-select"
                           value={line.id_producto}
-                          onChange={(event) => setComboLine(line.lineId, 'id_producto', event.target.value)}
+                          onChange={(e) => setComboLine(line.lineId, 'id_producto', e.target.value)}
                         >
                           <option value="">Selecciona un producto</option>
-                          {availableComponentProducts.map((product) => (
-                            <option key={product.id_producto} value={product.id_producto}>
-                              {product.nombre} · {product.categoria}
+                          {availableComponentProducts.map((p) => (
+                            <option key={p.id_producto} value={p.id_producto}>
+                              {p.nombre} · {p.categoria}
                             </option>
                           ))}
                         </select>
@@ -463,7 +576,7 @@ export default function ProductoForm() {
                           min="1"
                           step="1"
                           value={line.cantidad}
-                          onChange={(event) => setComboLine(line.lineId, 'cantidad', event.target.value)}
+                          onChange={(e) => setComboLine(line.lineId, 'cantidad', e.target.value)}
                         />
                       </div>
 
@@ -480,8 +593,8 @@ export default function ProductoForm() {
 
                     {selectedProduct && (
                       <div className="mt-3 text-sm text-[var(--app-text-muted)]">
-                        {selectedProduct.es_combo ? 'Este componente también es combo.' : 'Producto individual'} · Q
-                        {Number(selectedProduct.precio || 0).toFixed(2)}
+                        {selectedProduct.es_combo ? 'Este componente también es combo.' : 'Producto individual'} ·
+                        Q{Number(selectedProduct.precio || 0).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -497,7 +610,6 @@ export default function ProductoForm() {
             >
               {form.receta.map((line, index) => {
                 const selectedInsumo = insumosById.get(line.id_insumo);
-
                 return (
                   <div key={line.lineId} className="rounded-[1.15rem] border border-[var(--app-border)] p-3">
                     <div className="row g-3 align-items-end">
@@ -506,12 +618,12 @@ export default function ProductoForm() {
                         <select
                           className="form-select"
                           value={line.id_insumo}
-                          onChange={(event) => setRecipeLine(line.lineId, 'id_insumo', event.target.value)}
+                          onChange={(e) => setRecipeLine(line.lineId, 'id_insumo', e.target.value)}
                         >
                           <option value="">Selecciona un insumo</option>
-                          {insumos.map((insumo) => (
-                            <option key={insumo.id_insumo} value={insumo.id_insumo}>
-                              {insumo.nombre} · {insumo.unidad_medida}
+                          {insumos.map((i) => (
+                            <option key={i.id_insumo} value={i.id_insumo}>
+                              {i.nombre} · {i.unidad_medida}
                             </option>
                           ))}
                         </select>
@@ -525,7 +637,7 @@ export default function ProductoForm() {
                           min="0.001"
                           step="0.001"
                           value={line.cantidad}
-                          onChange={(event) => setRecipeLine(line.lineId, 'cantidad', event.target.value)}
+                          onChange={(e) => setRecipeLine(line.lineId, 'cantidad', e.target.value)}
                         />
                       </div>
 
@@ -542,7 +654,8 @@ export default function ProductoForm() {
 
                     {selectedInsumo && (
                       <div className="mt-3 text-sm text-[var(--app-text-muted)]">
-                        Unidad base: {selectedInsumo.unidad_medida} · Stock actual {Number(selectedInsumo.stock_actual || 0).toFixed(2)}
+                        Unidad base: {selectedInsumo.unidad_medida} · Stock actual{' '}
+                        {Number(selectedInsumo.stock_actual || 0).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -555,9 +668,7 @@ export default function ProductoForm() {
             <button type="submit" className="btn btn-brand" disabled={saving}>
               {saving ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear producto'}
             </button>
-            <Link to="/productos" className="btn btn-outline-secondary">
-              Cancelar
-            </Link>
+            <Link to="/productos" className="btn btn-outline-secondary">Cancelar</Link>
           </div>
         </form>
       </div>
